@@ -9,7 +9,7 @@ import './scss/style.scss'
 import './scss/examples.scss'
 import { ToastContainer } from 'react-toastify'
 
-// Containers
+
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
 
 // Pages

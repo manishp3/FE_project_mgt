@@ -313,7 +313,7 @@ const Login = () => {
         });
         setforgotUserMailIRef(response.email);
         // setShowForgot(true);
-        navigate("/veirfyOtp",{state:{mailRefId:response.email}})
+        navigate("/veirfyOtp", { state: { mailRefId: response.email } })
         console.log("log of resposen senfotp::", response);
       } catch (error) {
         console.log("log of resposen error::", error);
@@ -478,7 +478,7 @@ const Login = () => {
                       </CCol>
                       <CCol xs={6} className="text-right">
                         <CButton color="link" className="px-0"
-                         onClick={handleForgot}
+                          onClick={handleForgot}
                         >
                           Forgot password?
                         </CButton>
@@ -523,9 +523,20 @@ const Login = () => {
                 value={otp}
                 onChange={setOtp}
                 numInputs={5}
+                
                 // isDisabled={true}
                 renderSeparator={<span style={{ visibility: "hidden" }}>--</span>}
-                renderInput={(props) => <input {...props} />}
+                renderInput={(props) => <input style={{
+                  width: "40px",
+                  height: "40px",
+                  margin: "0 5px",
+                  fontSize: "18px",
+                  textAlign: "center",
+                  border: "1px solid #ccc",
+                  borderRadius: "6px",
+                  outline: "none",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                }} {...props} />}
               />
             </div>
           </Modal.Body>

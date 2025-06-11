@@ -13,7 +13,8 @@ import {
   cilPuzzle,
   cilSpeedometer,
   cilStar,
-   cilExitToApp, cilFolderOpen,
+
+  cilExitToApp, cilFolderOpen,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -44,12 +45,12 @@ const _nav = [
     to: '/projects',
     icon: <CIcon icon={cilFolderOpen} customClassName="nav-icon" />,
   },
-  {
-    component: CNavItem,
-    name: 'Logout',
-    to: '/theme/logout',
-    icon: <CIcon icon={ cilExitToApp} customClassName="nav-icon" />,
-  },
+  // {
+  //   component: CNavItem,
+  //   name: 'Logout',
+  //   to: '/theme/logout',
+  //   icon: <CIcon icon={ cilExitToApp} customClassName="nav-icon" />,
+  // },
   {
     component: CNavTitle,
     name: 'Components',

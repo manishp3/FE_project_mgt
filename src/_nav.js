@@ -36,7 +36,8 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Stared Projects',
-    to: '/theme/sprojects',
+    // to: '/theme/sprojects',
+    to: '/sprojects',
     icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
   },
   {

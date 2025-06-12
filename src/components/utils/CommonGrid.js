@@ -3,7 +3,7 @@ import { MaterialReactTable, useMaterialReactTable } from 'material-react-table'
 import React, { useMemo } from 'react'
 import { faEdit, faEye, faTrash } from '@fortawesome/free-solid-svg-icons';
 
-const CommonGrid = ({ headers, accessorKey, data,allowDelete, allowEdit,
+const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
     handleDelete, getedtidata, }) => {
     console.log("from common grid:: headers", headers);
     console.log("from common grid:: accessorKey", accessorKey);
@@ -43,14 +43,14 @@ const CommonGrid = ({ headers, accessorKey, data,allowDelete, allowEdit,
                 Cell: ({ cell }) => (
                     <div>
                         {allowEdit != 0 ? (
-                            <span style={{ fontSize: "22px", cursor: "pointer",padding:"5px" }}
+                            <span style={{ fontSize: "22px", cursor: "pointer", padding: "5px" }}
                                 onClick={() => getedtidata(cell.getValue())}>
                                 <FontAwesomeIcon icon={faTrash} />
                             </span>
                         ) : null}
 
                         {allowDelete != 0 ? (
-                            <span style={{ fontSize: "22px", cursor: "pointer",padding:"5px" }}
+                            <span style={{ fontSize: "22px", cursor: "pointer", padding: "5px" }}
                                 onClick={() => handleDelete(cell)}>
                                 <FontAwesomeIcon icon={faEdit} />
                             </span>

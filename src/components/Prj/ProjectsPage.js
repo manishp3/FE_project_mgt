@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolderOpen, faAdd } from '@fortawesome/free-solid-svg-icons';
-import { GetApiCall, PostApiCall } from '../../ApiCall';
+import { faFolderOpen, faAdd, faEllipsis } from '@fortawesome/free-solid-svg-icons';
+import { DeleteApiCall, GetApiCall, PatchApiCall, PostApiCall } from '../../ApiCall';
 import Select from "react-select"
 import { Button } from 'react-bootstrap';
-import { CHeader, CModal, CModalBody, CModalFooter, CModalHeader, CButton, CInputGroup, CInputGroupText, CFormInput } from '@coreui/react';
+import { CHeader, CModal, CModalBody, CModalFooter, CModalHeader, CButton, CInputGroup, CInputGroupText, CFormInput, CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem } from '@coreui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Modal, ModalBody, ModalFooter, ModalHeader, Row, UncontrolledDropdown } from 'reactstrap';
 import { toast } from 'react-toastify';
+import { Prev } from 'react-bootstrap/esm/PageItem';
 // import Project from './Projects';
 
 const ProjectsPage = () => {
   const navigate = useNavigate()
   const [isCreateProjectModalOpen, setisCreateProjectModalOpen] = useState(false)
   const [iscreateProjectDisabled, setiscreateProjectDisabled] = useState(false)
-  const [dropDownOpen, setdropDownOpen] = useState(false)
+
   const [projectData, setprojectData] = useState({
     projectname: ""
   })
@@ -64,13 +65,13 @@ const ProjectsPage = () => {
     //   id.value
     // ))
     let valid = true;
-    if(projectData.projectname==""){
+    if (projectData.projectname == "") {
       toast.error("Please Enter Project name!")
-      valid=false
+      valid = false
     }
-    if(ProjectMembers.length<1){
+    if (ProjectMembers.length < 1) {
       toast.error("Please Select Project Member!")
-      valid=false
+      valid = false
     }
 
     if (!valid) return 0;
@@ -94,25 +95,91 @@ const ProjectsPage = () => {
   }
   console.log("prokect members::", ProjectMembers);
 
+  const createModalToggle = () => {
+    setisCreateProjectModalOpen(false)
+    setisEdit(0)
+    setprojectId("")
+    setprojectData({
+      projectname: ""
+    })
+    setProjectMembers([])
+  }
   function handleprojectMemberChange(data) {
     console.log("prokect members::dd", data);
     let sop = "";
     setProjectMembers(data);
-    // if (data.length > 0) {
 
-    //   for (let i = 0; i < data.length; i++) {
-    //     if (i == 0) {
-    //       sop = data[i]["value"];
-    //     } else {
-    //       sop = sop + "," + data[i]["value"];
-    //     }
-    //     // setprojectMember_id(sop);
-
-    //   }
-    // }
   }
-
+  const [projectId, setprojectId] = useState(null)
+  const [openEditModal, setopenEditModal] = useState(false)
   console.log("AllProjects data::", AllProjects);
+  const handleProjectStar = async(project) => {
+    console.log("project data::", project);
+    const payload = {
+      is_star:project.is_star==1?0:1
+    }
+    console.log("ProjectIds data::123", payload);
+
+    const uresponse = await PatchApiCall(`project_u/${project._id}`, payload)
+    console.log("response edit ::", uresponse);
+    if (uresponse.success == true) {
+      getProjectsDetails()
+    }
+
+  }
+  const [deleteProjectModal, setdeleteProjectModal] = useState(false)
+  console.log("Called on delte::", deleteProjectModal);
+  const handleOpenDeleteModal = (id) => {
+    console.log("Called on delte");
+
+    setprojectId(id)
+    setdeleteProjectModal(true)
+  }
+  const handleProjectDelete = async () => {
+    console.log("AllProjects data::", AllProjects);
+    const dresponse = await DeleteApiCall(`project_d/${projectId}`)
+    console.log("log of dresponse::", dresponse);
+    if (dresponse.success == true) {
+      getProjectsDetails()
+    }
+    setprojectId(null)
+    setdeleteProjectModal(false)
+
+  }
+  const handleProjectEdit = async () => {
+    console.log("ProjectIds data::", ProjectMembers);
+    const payload = {
+      project_name: projectData.projectname,
+      members: ProjectMembers.map(e=>e.value)
+    }
+    console.log("ProjectIds data::123", payload);
+
+    const uresponse = await PatchApiCall(`project_u/${projectId}`, payload)
+    console.log("response edit ::", uresponse);
+    if (uresponse.success == true) {
+      getProjectsDetails()
+    }
+    setisEdit(0)
+    setprojectId(null)
+    setisCreateProjectModalOpen(false)
+
+  }
+  const [isEdit, setisEdit] = useState(0)
+  const handleOpenEditModal = async (id) => {
+    console.log("ProjectIds data::oepn", id);
+
+    const eresponse = await GetApiCall(`project/${id}`)
+    console.log("eresponse::", eresponse);
+    const data = eresponse.data.project
+    setprojectData((pre) => ({
+      ...pre,
+      projectname: data.project_name
+    }))
+    setisEdit(1)
+    setprojectId(id)
+    setProjectMembers(data.members)
+    setisCreateProjectModalOpen(true)
+  }
   return (
     <>
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "16px" }}>
@@ -120,20 +187,20 @@ const ProjectsPage = () => {
 
         <button onClick={openCreateProjectModal} style={{ border: "none" }} title='Create project'>
           <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="48"
-          height="48"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#4CAF50"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
-          <line x1="12" y1="11" x2="12" y2="17" />
-          <line x1="9" y1="14" x2="15" y2="14" />
-        </svg>
+            xmlns="http://www.w3.org/2000/svg"
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#4CAF50"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
+            <line x1="12" y1="11" x2="12" y2="17" />
+            <line x1="9" y1="14" x2="15" y2="14" />
+          </svg>
         </button>
 
 
@@ -141,7 +208,8 @@ const ProjectsPage = () => {
 
       <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
         {AllProjects.map((project, index) => (
-          <div
+          <div 
+          title="Go to Project"
             key={index}
             style={{
               height: "150px",
@@ -162,18 +230,16 @@ const ProjectsPage = () => {
             }}
           >
             <div style={{ position: "absolute", top: "10px", right: "10px" }}>
-              <span onClick={() => setdropDownOpen(!dropDownOpen)}>...</span>
-              {/* <Dropdown isOpen={dropDownOpen} toggle={()=>setdropDownOpen(!dropDownOpen)} direction="down">
-                <DropdownToggle tag="a" href="#" className="btn btn-light btn-icon">
-                  <i className="ri-equalizer-fill"></i>
-                </DropdownToggle>
-                <DropdownMenu className="dropdown-menu-end" style={{ position: "absolute", inset: "0px 0px auto auto", margin: "0px", transform: "translate(0px, 23px)" }}>
-                  <li><DropdownItem><i className="ri-eye-fill me-2 align-middle text-muted"></i>View</DropdownItem></li>
-                  <li><DropdownItem><i className="ri-download-2-fill me-2 align-middle text-muted"></i>Download</DropdownItem></li>
-                  <li className="dropdown-divider"></li>
-                  <li><DropdownItem><i className="ri-delete-bin-5-line me-2 align-middle text-muted"></i>Delete</DropdownItem></li>
-                </DropdownMenu>
-              </Dropdown> */}
+              <CDropdown variant="nav-item">
+                <CDropdownToggle className="py-0 pe-0 border-0 bg-transparent" caret={false}>
+                  <FontAwesomeIcon icon={faEllipsis} />
+                </CDropdownToggle>
+                <CDropdownMenu className="pt-0" placement="bottom-end">
+                  <CDropdownItem onClick={() => handleOpenEditModal(project._id)}>edit</CDropdownItem>
+                  <CDropdownItem onClick={() => handleOpenDeleteModal(project._id)}>Delete</CDropdownItem>
+                  <CDropdownItem onClick={() => handleProjectStar(project)}>{project.is_star==1?"Unstar Project":"Star Project"}</CDropdownItem>
+                </CDropdownMenu>
+              </CDropdown>
             </div>
             <div onClick={() => navigate("project", { state: { project_id: project._id } })}>
               <p style={{ margin: 0, fontWeight: 500 }}>Project Name :{project?.project_name.length > 10 ? project?.project_name.slice(0, 17) : project?.project_name}</p>
@@ -190,9 +256,9 @@ const ProjectsPage = () => {
         }
       </div>
 
-      <Modal isOpen={isCreateProjectModalOpen} toggle={() => setisCreateProjectModalOpen(!isCreateProjectModalOpen)}>
-        <ModalHeader>
-          Create Project
+      <Modal isOpen={isCreateProjectModalOpen} toggle={createModalToggle}>
+        <ModalHeader toggle={createModalToggle}>
+          {isEdit == 1 ? "Edit Project" : "Create Project"}
         </ModalHeader>
         <ModalBody>
 
@@ -209,7 +275,7 @@ const ProjectsPage = () => {
                 value={projectData.projectname}
                 onChange={(e) => handleProjectChange(e)}
               />
-              </Col>
+            </Col>
             </Row>
           </div>
           <div>
@@ -227,10 +293,39 @@ const ProjectsPage = () => {
         </ModalBody>
         <ModalFooter>
           <Button color="primary" className="px-4" disabled={iscreateProjectDisabled}
-            onClick={handleCreateProject}>
+            onClick={isEdit == 1 ? handleProjectEdit : handleCreateProject}>
             Submit
           </Button>
         </ModalFooter>
+      </Modal>
+      <Modal isOpen={deleteProjectModal} toggle={() => { setdeleteProjectModal(false), setprojectId(null) }} centered>
+        <ModalBody style={{ textAlign: "center", padding: "30px" }}>
+          {/* Warning SVG */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="60"
+            height="60"
+            fill="orange"
+            className="bi bi-exclamation-triangle-fill mb-3"
+            viewBox="0 0 16 16"
+          >
+            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.964 0L.165 13.233c-.457.778.091 1.767.982 1.767h13.707c.89 0 1.438-.99.982-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1-2.002 0 1 1 0 0 1 2.002 0z" />
+          </svg>
+
+          <h5 style={{ fontWeight: "bold", marginBottom: "10px" }}>
+            Are you sure you want to delete this project?
+          </h5>
+
+
+          <div style={{ marginTop: "20px", display: "flex", justifyContent: "center", gap: "15px" }}>
+            <Button variant="secondary" onClick={() => { setdeleteProjectModal(false), setprojectId(null) }} >
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={handleProjectDelete}>
+              Delete
+            </Button>
+          </div>
+        </ModalBody>
       </Modal>
     </>
   );

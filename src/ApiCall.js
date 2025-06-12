@@ -48,3 +48,44 @@ export const DeletepiCall = async (endPoint, payload = {}, headers = {}) => {
     throw error; // Let caller handle it
   }
 };
+
+// export const PatchApiCall = async (endPoint, payload = {}, headers = {}) => {
+//   try {
+//     const response = await axios.patch(endPoint, payload, { headers });
+//     return response.data;
+//   } catch (err) {
+//     console.error("PATCH request failed:", err);
+//     throw err; // rethrow so calling code can handle the error
+//   }
+// }
+
+
+export const PatchApiCall = async (endPoint, payload = {}, headers = {}) => {
+  try {
+    const response = await axios.patch(
+      `${import.meta.env.VITE_API_URL}${endPoint}`,
+      payload,
+      {
+        headers,
+        withCredentials: true, // ✅ Required if token is in cookies
+      }
+    );
+    return response.data;
+  } catch (err) {
+    console.error("PATCH request failed:", err);
+    throw err; // Let caller handle it
+  }
+};
+
+export const DeleteApiCall = async (endPoint, payload = {}, headers = {}) => {
+  try {
+    const response = await axios.delete(`${import.meta.env.VITE_API_URL}${endPoint}`, {
+      headers,
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (err) {
+    console.error("DELETE request failed:", err);
+    throw err; // rethrow so calling code can handle the error
+  }
+};

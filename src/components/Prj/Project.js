@@ -184,7 +184,7 @@ const Project = () => {
               ))}
             </p>
           </div>
-          <button style={{border:"none"}}>
+          <button style={{ border: "none" }}>
             <FontAwesomeIcon
               onClick={() => setdeleteProjectModal(true)}
               title='Delete Project'

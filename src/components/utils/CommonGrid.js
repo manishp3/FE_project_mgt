@@ -9,6 +9,10 @@ const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
     console.log("from common grid:: accessorKey", accessorKey);
     console.log("from common grid:: data", data);
 
+    const handleDelete1 = (id) => {
+        console.log("from common grid:: id", id);
+
+    }
     const columns = useMemo(() => {
         let actionColumn = null;
         // Create dynamic columns based on the headers and accessorKey arrays
@@ -38,28 +42,37 @@ const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
 
         if (allowEdit !== 0 || allowDelete !== 0) {
             actionColumn = {
-                accessorKey: "id",
                 header: "Action",
-                Cell: ({ cell }) => (
-                    <div>
-                        {allowEdit != 0 ? (
-                            <span style={{ fontSize: "22px", cursor: "pointer", padding: "5px" }}
-                                onClick={() => getedtidata(cell.getValue())}>
-                                <FontAwesomeIcon icon={faTrash} />
-                            </span>
-                        ) : null}
+                id: "action", // ✅ Give a unique ID, don't rely on "id" from data
+                Cell: ({ row }) => {
+                    const rowData = row.original; // ✅ Full row object
+                    const id = rowData._id || rowData.id; // Adjust depending on your schema
+console.log("rowData::",rowData);
 
-                        {allowDelete != 0 ? (
-                            <span style={{ fontSize: "22px", cursor: "pointer", padding: "5px" }}
-                                onClick={() => handleDelete(cell)}>
-                                <FontAwesomeIcon icon={faEdit} />
-                            </span>
-
-                        ) : null}
-                    </div>
-                ), // Handle action buttons
+                    return (
+                        <div>
+                            {allowEdit !== 0 && (
+                                <span
+                                    style={{ fontSize: "22px", cursor: "pointer", padding: "5px" }}
+                                    onClick={() => getedtidata(id)}
+                                >
+                                    <FontAwesomeIcon icon={faEdit} />
+                                </span>
+                            )}
+                            {allowDelete !== 0 && (
+                                <span
+                                    style={{ fontSize: "22px", cursor: "pointer", padding: "5px" }}
+                                    onClick={() => handleDelete(id)}
+                                >
+                                    <FontAwesomeIcon icon={faTrash} />
+                                </span>
+                            )}
+                        </div>
+                    );
+                },
             };
         }
+
 
         // grid not display
 
@@ -77,12 +90,12 @@ const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
         enablePagination: "true",
         paginationPosition: "bottom",
         paginationDisplayMode: "pages",
-        enableClickToCopy: true,
+        // enableClickToCopy: true,
         enableRowNumbers: true,
         enableRowOrdering: true,
-        enableEditing: true,
-        editDisplayMode: 'cell',
-        enableCellActions: true,
+        // enableEditing: true,
+        // editDisplayMode: 'cell',
+        // enableCellActions: true,
         renderBottomToolbarCustomActions: ({ table }) => (
             <div style={{ padding: "10px", fontWeight: "bold" }}>
                 Total Records: {table.getPrePaginationRowModel().rows.length}

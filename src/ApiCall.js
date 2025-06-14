@@ -29,25 +29,25 @@ export const PostApiCall = async (endPoint, payload = {}, headers = {}) => {
     throw error; // Let caller handle it
   }
 };
-export const DeletepiCall = async (endPoint, payload = {}, headers = {}) => {
-  try {
-    console.log("log of postadata::", payload);
-    console.log("log of postadata::1", import.meta.env.VITE_API_URL + endPoint);
+// export const DeletepiCall = async (endPoint, payload = {}, headers = {}) => {
+//   try {
+//     console.log("log of postadata::", payload);
+//     console.log("log of postadata::1", import.meta.env.VITE_API_URL + endPoint);
 
-    const response = await axios.delete(
-      `${import.meta.env.VITE_API_URL}${endPoint}`,
-      {
-        data: payload,
-        headers, withCredentials: true
-      }
-      // { headers }
-    );
-    return response.data; // Return only the data (optional)
-  } catch (error) {
-    console.error("POST API Error:", error);
-    throw error; // Let caller handle it
-  }
-};
+//     const response = await axios.delete(
+//       `${import.meta.env.VITE_API_URL}${endPoint}`,
+//       {
+//         data: payload,
+//         headers, withCredentials: true
+//       }
+//       // { headers }
+//     );
+//     return response.data; // Return only the data (optional)
+//   } catch (error) {
+//     console.error("POST API Error:", error);
+//     throw error; // Let caller handle it
+//   }
+// };
 
 // export const PatchApiCall = async (endPoint, payload = {}, headers = {}) => {
 //   try {

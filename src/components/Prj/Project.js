@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFolderOpen, faAdd, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { DeletepiCall, GetApiCall, PostApiCall } from '../../ApiCall';
+import { DeleteApiCall, GetApiCall, PostApiCall } from '../../ApiCall';
 import Select from "react-select"
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'react-bootstrap';
 import { CHeader, CModal, CModalBody, CModalFooter, CModalHeader, CButton, CInputGroup, CInputGroupText, CFormInput } from '@coreui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CommonGrid from '../utils/CommonGrid';
@@ -20,7 +20,7 @@ const Project = () => {
   const [projectMembers, setprojectMembers] = useState([])
   const [selectedMember, setselectedMember] = useState([])
   const projectStatus = [
-    { label: "T0 Do", value: "To Do" },
+    { label: "To Do", value: "To Do" },
     { label: "In Progress", value: "In Progress" },
     { label: "Done", value: "Done" },
   ]
@@ -35,24 +35,25 @@ const Project = () => {
 
   console.log("location data::", location);
   // console.log("location data::1", location?.state?.project_id);
-  useEffect(() => {
-    const getProjectTask = async () => {
-      if (location?.state?.project_id != null) {
-        const project_id = location?.state?.project_id
-        const response = await GetApiCall(`project/${project_id}`)
-        console.log("single project tasks detail:", response);
-        setprojectMembers(response.data.project.members)
-        setproject(response.data.project)
+  const getProjectTask = async () => {
+    if (location?.state?.project_id != null) {
+      const project_id = location?.state?.project_id
+      const response = await GetApiCall(`project/${project_id}`)
+      console.log("single project tasks detail:", response);
+      setprojectMembers(response.data.project.members)
+      setproject(response.data.project)
 
-        if (response.data.success == true) {
-          const tResponse = await GetApiCall(`gettasks/${response.data.project._id}`)
-          if (tResponse.data.success == true) {
-            setprojectTasks(tResponse.data.tasks)
-          }
+      if (response.data.success == true) {
+        const tResponse = await GetApiCall(`gettasks/${response.data.project._id}`)
+        if (tResponse.data.success == true) {
+          setprojectTasks(tResponse.data.tasks)
         }
-
       }
+
     }
+  }
+  useEffect(() => {
+
     getProjectTask()
   }, [location])
 
@@ -114,12 +115,12 @@ const Project = () => {
       label: taskData.label,
       summary: taskData.summary,
       status: selectedStatus.value,
-      priority: selectedPriority, value,
+      priority: selectedPriority.value,
       due_date: taskData.timeline,
       assign_to: null,
 
     }
-    const project_id = location?.state?.project._id
+    const project_id = location?.state?.project_id
     console.log("handleCreateTask paylaod::", payload);
     const response = await PostApiCall(`createtask/${project_id}`)
     console.log("response of createtask::", response);
@@ -138,7 +139,7 @@ const Project = () => {
   console.log("log og projeect::", project);
   const handleDeleteProject = async () => {
     let projectId = project._id
-    const dResponse = await DeletepiCall(`project_d/${projectId}`)
+    const dResponse = await DeleteApiCall(`project_d/${projectId}`)
     console.log("dResponse ::", dResponse);
     if (dResponse.success == true) {
       navigate("../projects")
@@ -149,9 +150,13 @@ const Project = () => {
   const getedtidata = () => {
     console.log();
   }
-  const handleDelete = () => {
-    console.log();
-
+  const handleDelete = async (id) => {
+    console.log("log of delete id::", id);
+    const dresponse = await DeleteApiCall(`task_d/${id}`)
+    console.log("log of delete dresponse::", dresponse);
+    if (dresponse.success == true) {
+      getProjectTask()
+    }
   }
 
   return (
@@ -335,6 +340,16 @@ const Project = () => {
           </div>
         </Modal.Body>
       </Modal>
+      {/* <Modal show={true} onHide={() => setdeleteProjectModal(false)} centered>
+
+        <ModalBody>
+          <h4>Are you sure to delete Project ?</h4>
+        </ModalBody>
+        <ModalFooter>
+          <Button className='btn btn-success'>Cancel</Button>
+          <Button className='btn btn-danger>Delete</Button>
+        </ModalFooter>
+      </Modal > */}
     </>
   );
 };

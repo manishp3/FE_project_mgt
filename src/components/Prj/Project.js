@@ -100,7 +100,7 @@ const Project = () => {
 
     setisOpenTaskModal(true)
   }
-  console.log("im called::", isOpenTaskModal);
+  console.log("im called selectedMember::", selectedMember);
   const toggleTaskModal = () => {
     setisOpenTaskModal(!isOpenTaskModal)
     settaskData({
@@ -110,6 +110,8 @@ const Project = () => {
       attachement: null,
     })
   }
+  console.log("taskData::",taskData);
+  
   const handleCreateTask = async () => {
     const payload = {
       label: taskData.label,
@@ -117,14 +119,20 @@ const Project = () => {
       status: selectedStatus.value,
       priority: selectedPriority.value,
       due_date: taskData.timeline,
-      assign_to: null,
+      assign_to: selectedMember.value,
+      image: null,
 
     }
+    console.log("log of payload::", payload);
+
     const project_id = location?.state?.project_id
     console.log("handleCreateTask paylaod::", payload);
-    const response = await PostApiCall(`createtask/${project_id}`)
+    const response = await PostApiCall(`createtask/${project_id}`, payload)
     console.log("response of createtask::", response);
-
+    if (response.success == true) {
+      setisOpenTaskModal(false)
+      getProjectTask()
+    }
   }
   const handlePriorityChange = (data) => {
     console.log("");
@@ -157,6 +165,13 @@ const Project = () => {
     if (dresponse.success == true) {
       getProjectTask()
     }
+  }
+  const [opemImageModal, setopemImageModal] = useState(false)
+  const [imageView, setimageView] = useState(null)
+  const handleImageReference = (data) => {
+    console.log("im caleld handleImageReference::", data);
+    setimageView(data)
+    setopemImageModal(true)
   }
 
   return (
@@ -221,6 +236,7 @@ const Project = () => {
           allowDelete={1}
           handleDelete={handleDelete}
           getedtidata={getedtidata}
+          handleImageReference={handleImageReference}
         />
       </Card>
 
@@ -253,7 +269,6 @@ const Project = () => {
                   value={selectedMember}
                   isMulti={false}
                   onChange={(e) => handleMemberChange(e)}
-
                 />
               </div>
             </Col>
@@ -296,7 +311,7 @@ const Project = () => {
             <Col>
               <div className="mb-3">
                 <label className="form-label">Attachment</label>
-                <input type="file" name="attachement" onChange={(e) => handleTaskChange(e)} className="form-control" accept=".png .jpg .jpeg" />
+                <input type="file" name="attachement" onChange={(e) => handleTaskChange(e)} className="form-control"  />
               </div>
             </Col>
           </Row>
@@ -340,16 +355,20 @@ const Project = () => {
           </div>
         </Modal.Body>
       </Modal>
-      {/* <Modal show={true} onHide={() => setdeleteProjectModal(false)} centered>
-
+      <Modal show={opemImageModal} onHide={() => setopemImageModal(false)} centered size="lg">
+        <ModalHeader closeButton>Reference Attachment</ModalHeader>
         <ModalBody>
-          <h4>Are you sure to delete Project ?</h4>
+          <img
+            src={`${import.meta.env.VITE_API_URL_IMAGE}${imageView}`}
+            alt="Task Image"
+            style={{ width: "767px", height: "350px", objectFit: "fill" }}
+          />
         </ModalBody>
-        <ModalFooter>
-          <Button className='btn btn-success'>Cancel</Button>
-          <Button className='btn btn-danger>Delete</Button>
-        </ModalFooter>
-      </Modal > */}
+        {/* <ModalFooter> */}
+        {/* <Button className='btn btn-success'>Cancel</Button>
+          <Button className='btn btn-danger'>Delete</Button> */}
+        {/* </ModalFooter> */}
+      </Modal >
     </>
   );
 };

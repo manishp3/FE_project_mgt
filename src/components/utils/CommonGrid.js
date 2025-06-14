@@ -4,15 +4,11 @@ import React, { useMemo } from 'react'
 import { faEdit, faEye, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
-    handleDelete, getedtidata, }) => {
+    handleDelete, getedtidata, handleImageReference}) => {
     console.log("from common grid:: headers", headers);
     console.log("from common grid:: accessorKey", accessorKey);
     console.log("from common grid:: data", data);
 
-    const handleDelete1 = (id) => {
-        console.log("from common grid:: id", id);
-
-    }
     const columns = useMemo(() => {
         let actionColumn = null;
         // Create dynamic columns based on the headers and accessorKey arrays
@@ -23,9 +19,9 @@ const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
                     accessorKey: accessor,
                     header,
                     Cell: ({ cell, row }) => (
-                        // <div style={{backgroundColor:"yellow"}}>
-                        <FontAwesomeIcon style={{ color: "blue", fontSize: "20px" }} icon={faEye} />
-                        // </div>
+                        <span style={{backgroundColor:"yellow"}} onClick={()=>handleImageReference(row.original.image)}>
+                        <FontAwesomeIcon style={{ color: "blue", fontSize: "20px" }} icon={faEye} title="reference attachment" />
+                        </span>
 
                     )
                 };
@@ -47,7 +43,7 @@ const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
                 Cell: ({ row }) => {
                     const rowData = row.original; // ✅ Full row object
                     const id = rowData._id || rowData.id; // Adjust depending on your schema
-console.log("rowData::",rowData);
+                    console.log("rowData::", rowData);
 
                     return (
                         <div>
@@ -56,7 +52,7 @@ console.log("rowData::",rowData);
                                     style={{ fontSize: "22px", cursor: "pointer", padding: "5px" }}
                                     onClick={() => getedtidata(id)}
                                 >
-                                    <FontAwesomeIcon icon={faEdit} />
+                                    <FontAwesomeIcon icon={faEdit} title='Edit' />
                                 </span>
                             )}
                             {allowDelete !== 0 && (
@@ -64,7 +60,7 @@ console.log("rowData::",rowData);
                                     style={{ fontSize: "22px", cursor: "pointer", padding: "5px" }}
                                     onClick={() => handleDelete(id)}
                                 >
-                                    <FontAwesomeIcon icon={faTrash} />
+                                    <FontAwesomeIcon icon={faTrash} title="delete"/>
                                 </span>
                             )}
                         </div>

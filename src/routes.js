@@ -22,8 +22,9 @@ const Spinners = React.lazy(() => import('./views/base/spinners/Spinners'))
 const Tabs = React.lazy(() => import('./views/base/tabs/Tabs'))
 const Tables = React.lazy(() => import('./views/base/tables/Tables'))
 const Tooltips = React.lazy(() => import('./views/base/tooltips/Tooltips'))
-const ProjectsPage=React.lazy(()=>import( './components/Prj/ProjectsPage'))
-const Project=React.lazy(()=>import("./components/Prj/Project"))
+const ProjectsPage = React.lazy(() => import('./components/Prj/ProjectsPage'))
+const Project = React.lazy(() => import("./components/Prj/Project"))
+const StaredProject = React.lazy(() => import("./components/Prj/StaredProjects"))
 
 // Buttons
 const Buttons = React.lazy(() => import('./views/buttons/buttons/Buttons'))
@@ -55,13 +56,18 @@ const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
+// const Profile_Page = React.lazy(() => import('./components/Profile/Profile_Page'))
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   // { path: '/theme', name: 'Theme', element: Colors, exact: true },
   // { path: '/theme/colors', name: 'Colors', element: Colors },
+  // { path: 'profile', name: 'Profile', element: Profile_Page },
   { path: 'projects', name: 'Projects', element: ProjectsPage },
+  { path: 'projects', name: 'Projects', element: ProjectsPage },
+  { path: 'sprojects/', name: 'Projects', element: StaredProject },
   { path: '/projects/project', name: 'Project', element: Project },
+  { path: '/sprojects/project', name: 'Project', element: Project },
   // { path: '/theme/typography', name: 'Typography', element: Typography },
   // { path: '/base', name: 'Base', element: Cards, exact: true },
   // { path: '/base/accordion', name: 'Accordion', element: Accordion },

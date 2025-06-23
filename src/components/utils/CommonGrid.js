@@ -4,7 +4,7 @@ import React, { useMemo } from 'react'
 import { faEdit, faEye, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
-    handleDelete, getedtidata, handleImageReference}) => {
+    handleDelete, getedtidata, handleImageReference }) => {
     console.log("from common grid:: headers", headers);
     console.log("from common grid:: accessorKey", accessorKey);
     console.log("from common grid:: data", data);
@@ -19,8 +19,10 @@ const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
                     accessorKey: accessor,
                     header,
                     Cell: ({ cell, row }) => (
-                        <span style={{backgroundColor:"yellow"}} onClick={()=>handleImageReference(row.original.image)}>
-                        <FontAwesomeIcon style={{ color: "blue", fontSize: "20px" }} icon={faEye} title="reference attachment" />
+
+                        <span style={{ cursor: "pointer" }} onClick={() => handleImageReference(row.original.image)}>
+                            {row.original.image &&
+                                <FontAwesomeIcon style={{ color: "blue", fontSize: "20px" }} icon={faEye} title="reference attachment" />}
                         </span>
 
                     )
@@ -60,7 +62,7 @@ const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
                                     style={{ fontSize: "22px", cursor: "pointer", padding: "5px" }}
                                     onClick={() => handleDelete(id)}
                                 >
-                                    <FontAwesomeIcon icon={faTrash} title="delete"/>
+                                    <FontAwesomeIcon icon={faTrash} title="delete" />
                                 </span>
                             )}
                         </div>

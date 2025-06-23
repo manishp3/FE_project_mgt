@@ -50,6 +50,7 @@ const AppHeader = () => {
     
     const response = GetApiCall("logout")
     localStorage.removeItem("token")
+    localStorage.removeItem("authUser")
     console.log("log of logout resposen::", response);
     navigate("/login")
     // window.location.reload(true)

@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolderOpen, faAdd, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { DeleteApiCall, GetApiCall, PostApiCall } from '../../ApiCall';
+import { faFolderOpen, faAdd, faTrash, faStar } from '@fortawesome/free-solid-svg-icons';
+import { DeleteApiCall, GetApiCall, PatchApiCall, PostApiCall } from '../../ApiCall';
 import Select from "react-select"
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'react-bootstrap';
 import { CHeader, CModal, CModalBody, CModalFooter, CModalHeader, CButton, CInputGroup, CInputGroupText, CFormInput } from '@coreui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CommonGrid from '../utils/CommonGrid';
+import moment from "moment";
 import { Card, Col, Row } from 'reactstrap';
+import { toast } from 'react-toastify';
 
 
 // import Project from './Projects';
@@ -19,6 +21,19 @@ const Project = () => {
   const [project, setproject] = useState([])
   const [projectMembers, setprojectMembers] = useState([])
   const [selectedMember, setselectedMember] = useState([])
+  const [isOpenTaskModal, setisOpenTaskModal] = useState(false)
+  const [selectedPriority, setselectedPriority] = useState([])
+  const [selectedStatus, setselectedStatus] = useState([])
+  const [deleteProjectModal, setdeleteProjectModal] = useState(false)
+  const [taskData, settaskData] = useState({
+    label: "",
+    summary: "",
+    timeline: null,
+    attachement: null,
+    // assign_to: "",
+  })
+  const [imageData, setimageData] = useState(null)
+  const [refresData, setrefresData] = useState(0)
   const projectStatus = [
     { label: "To Do", value: "To Do" },
     { label: "In Progress", value: "In Progress" },
@@ -30,8 +45,27 @@ const Project = () => {
     { label: "High", value: "High" },
   ]
 
+  const headers = ['Task', "Summary", "Status", "Assignee", "Priority", "Due Date", "Reference", "Created On"]
+  const accessorKey = ['label', "summary", "status", "assign_to", "priority", "due_date", "image", "createdAt"]
+  const [mainDate, setmainDate] = useState([])
+  console.log("projectTasks 1::", projectMembers);
 
+  console.log("log of selected status::", selectedStatus);
 
+  useEffect(() => {
+    if (projectTasks && projectTasks.length > 0) {
+      const updatedData = projectTasks.map((project) => ({
+        ...project, // keep other fields
+        // priority: project.priority, // assuming this is not a date
+        due_date: moment(project.due_date).format("DD-MM-YYYY"),
+        createdAt: moment(project.createdAt).format("DD-MM-YYYY hh:MM A"),
+        // to get name of mail by id
+        assign_to: projectMembers.map(prj => project.
+          assign_to == prj.value && prj.label)
+      }));
+      setmainDate(updatedData);
+    }
+  }, [projectTasks]);
 
   console.log("location data::", location);
   // console.log("location data::1", location?.state?.project_id);
@@ -39,14 +73,23 @@ const Project = () => {
     if (location?.state?.project_id != null) {
       const project_id = location?.state?.project_id
       const response = await GetApiCall(`project/${project_id}`)
+
       console.log("single project tasks detail:", response);
       setprojectMembers(response.data.project.members)
       setproject(response.data.project)
 
+      // const data = await GetApiCall(`project-members/${project_id}`)
+      // console.log("data.data.success::1", data);
+      // if (data.data.success == true) {
+      //   console.log("data.data.success::", data.data.members);
+
+      //    setProjectMembers(data.data.members)
+      // }
       if (response.data.success == true) {
         const tResponse = await GetApiCall(`gettasks/${response.data.project._id}`)
         if (tResponse.data.success == true) {
           setprojectTasks(tResponse.data.tasks)
+          // setrefresData(1)
         }
       }
 
@@ -57,35 +100,31 @@ const Project = () => {
     getProjectTask()
   }, [location])
 
-  useEffect(() => {
-    if (projectTasks.length > 0) {
 
-    }
-  }, [projectTasks])
+  console.log("projectTasks::", projectTasks);
 
-  console.log("projectTasks::", projectMembers);
 
-  const headers = ['Task', "Summary", "Status", "Priority", "Due Date", "Reference", "Created On"]
-  const accessorKey = ['label', "summary", "status", "priority", "due_date", "image", "createdAt"]
-  const [isOpenTaskModal, setisOpenTaskModal] = useState(false)
-  const [selectedPriority, setselectedPriority] = useState([])
-  const [selectedStatus, setselectedStatus] = useState([])
-  const [deleteProjectModal, setdeleteProjectModal] = useState(false)
-  const [taskData, settaskData] = useState({
-    label: "",
-    summary: "",
-    timeline: null,
-    attachement: null,
-    assign_to: "",
-  })
+
   const handleTaskChange = (e) => {
     const { name, value } = e.target;
+    console.log("log of e ::", e.target);
+
     if (name == "attachement") {
       settaskData((pre) => ({
         ...pre,
         [name]: e.target.files[0]
       }))
     }
+    // if (name == "timeline") {
+    //   let date = new Date().toISOString().split("T")[0]
+    //   if (value < date) {
+    //     settaskData((pre) => ({
+    //       ...pre,
+    //       timeline: null,
+    //     }))
+    //     return 0;
+    //   }
+    // }
     settaskData((pre) => ({
       ...pre,
       [name]: value
@@ -100,7 +139,7 @@ const Project = () => {
 
     setisOpenTaskModal(true)
   }
-  console.log("im called selectedMember::", selectedMember);
+  console.log("im called selectedMember::", selectedPriority);
   const toggleTaskModal = () => {
     setisOpenTaskModal(!isOpenTaskModal)
     settaskData({
@@ -110,26 +149,53 @@ const Project = () => {
       attachement: null,
     })
   }
-  console.log("taskData::",taskData);
-  
-  const handleCreateTask = async () => {
-    const payload = {
-      label: taskData.label,
-      summary: taskData.summary,
-      status: selectedStatus.value,
-      priority: selectedPriority.value,
-      due_date: taskData.timeline,
-      assign_to: selectedMember.value,
-      image: null,
+  console.log("taskData::", imageData);
 
-    }
-    console.log("log of payload::", payload);
+  const handleCreateTask = async () => {
+    const formData = new FormData()
+    formData.append("label", taskData.label)
+    formData.append("summary", taskData.summary)
+    formData.append("status", selectedStatus.value)
+    formData.append("priority", selectedPriority.value)
+    formData.append("due_date", taskData.timeline)
+    formData.append("assign_to", selectedMember.value)
+    formData.append("image", imageData)
+    // const payload = {
+    //   label: taskData.label,
+    //   summary: taskData.summary,
+    //   status: selectedStatus.value,
+    //   priority: selectedPriority.value,
+    //   due_date: taskData.timeline,
+    //   assign_to: selectedMember.value,
+    //   image: imageData,
+
+    // }
+    // console.log("log of payload::", payload);
 
     const project_id = location?.state?.project_id
-    console.log("handleCreateTask paylaod::", payload);
-    const response = await PostApiCall(`createtask/${project_id}`, payload)
+    let response = null;
+    if (EditId !== null) {
+      response = await PatchApiCall(`task_u/${EditId}`, formData);
+      setEditId(null)
+    }
+    else {
+      response = await PostApiCall(`createtask/${project_id}`, formData)
+    }
     console.log("response of createtask::", response);
     if (response.success == true) {
+      console.log("im called true");
+
+      toast.success(response.msg, "")
+      settaskData({
+        label: "",
+        summary: "",
+        timeline: null,
+        attachement: null,
+        // assign_to: "",
+      })
+      setselectedStatus([])
+      setselectedPriority([])
+      setselectedMember([])
       setisOpenTaskModal(false)
       getProjectTask()
     }
@@ -154,10 +220,51 @@ const Project = () => {
     }
 
   }
+  const [EditId, setEditId] = useState(null)
+  // const getedtidata = async (id) => {
+  //   setEditId(id)
+  //   const tResponse = await GetApiCall(`gettask/${id}`)
+  //   console.log("edit data resposen::", tResponse);
+  //   if (tResponse.data.success == true) {
+  //     const data = tResponse.data.task
+  //     settaskData({
+  //       label: data.label,
+  //       summary: data.summary,
+  //       timeline: data.due_date,
+  //       attachement: data.image,
+  //       // assign_to: projectMembers.map(prj => prj.value == data.assign_to && prj.label),
+  //     })
+  //     setselectedPriority(data.priority)
+  //     setselectedStatus(data.status)
+  //     setselectedMember(projectMembers.map(prj => prj.value == data.assign_to && prj.label))
+  //     setisOpenTaskModal(true)
+  //   }
+  // }
+  const getedtidata = async (id) => {
+    setEditId(id);
+    const tResponse = await GetApiCall(`gettask/${id}`);
+    console.log("edit data resposen::", tResponse);
+    if (tResponse.data.success == true) {
+      const data = tResponse.data.task;
 
-  const getedtidata = () => {
-    console.log();
-  }
+      // Find the member object that matches the assign_to ID
+      const assignedMember = projectMembers.find(prj => prj.value === data.assign_to);
+
+      settaskData({
+        label: data.label,
+        summary: data.summary,
+        timeline: data.due_date.split('T')[0], // Format date for input field
+        attachement: data.image,
+      });
+
+      // Set the dropdown values properly
+      setselectedPriority(taskPriority.find(opt => opt.value === data.priority) || null);
+      setselectedStatus(projectStatus.find(opt => opt.value === data.status) || null);
+      setselectedMember(assignedMember || null);
+
+      setisOpenTaskModal(true);
+    }
+  };
   const handleDelete = async (id) => {
     console.log("log of delete id::", id);
     const dresponse = await DeleteApiCall(`task_d/${id}`)
@@ -202,6 +309,15 @@ const Project = () => {
                   {index < projectMembers.length - 1 && ", "}
                 </span>
               ))}
+              {project?.is_star == 1 &&
+                <p style={{
+                  margin: 0, fontSize: "16px", position: "absolute",
+                  top: "27px",
+                  right: "74px"
+                }}>
+                  <span style={{ fontWeight: "bold", color: "#333" }}><FontAwesomeIcon icon={faStar} /> </span>
+
+                </p>}
             </p>
           </div>
           <button style={{ border: "none" }}>
@@ -224,14 +340,14 @@ const Project = () => {
         <div style={{
           display: "flex",
           justifyContent: "flex-end",
-          marginBottom: "5px"
+          margin: "5px 5px "
         }}>
           <Button onClick={openCreateTaskModal}>Create Task</Button>
         </div>
         <CommonGrid
           headers={headers}
           accessorKey={accessorKey}
-          data={projectTasks}
+          data={mainDate}
           allowEdit={1}
           allowDelete={1}
           handleDelete={handleDelete}
@@ -291,7 +407,7 @@ const Project = () => {
             <Col>
               <div className="mb-3">
                 <label className="form-label">Timeline</label>
-                <input type="date" name="timeline" className="form-control" onChange={(e) => handleTaskChange(e)} value={taskData.timeline} />
+                <input type="date" name="timeline" className="form-control" onChange={(e) => handleTaskChange(e)} value={taskData.timeline} min={new Date().toISOString().split('T')[0]} />
               </div>
             </Col>
             <Col>
@@ -311,7 +427,7 @@ const Project = () => {
             <Col>
               <div className="mb-3">
                 <label className="form-label">Attachment</label>
-                <input type="file" name="attachement" onChange={(e) => handleTaskChange(e)} className="form-control"  />
+                <input type="file" name="attachement" onChange={(e) => setimageData(e.target.files[0])} className="form-control" />
               </div>
             </Col>
           </Row>
@@ -322,7 +438,7 @@ const Project = () => {
             Close
           </Button>
           <Button variant="primary" onClick={handleCreateTask}>
-            Create
+            {EditId ? "Update" : "Create"}
           </Button>
         </Modal.Footer>
       </Modal >

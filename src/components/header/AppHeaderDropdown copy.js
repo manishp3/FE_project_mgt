@@ -22,50 +22,27 @@ import {
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 
-
 import avatar8 from './../../assets/images/avatars/8.jpg'
 
 import { Button, Card, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCamera } from '@fortawesome/free-solid-svg-icons'
-import { PatchApiCall } from '../../ApiCall'
 
 const AppHeaderDropdown = () => {
 
   const [isOpenProfiel, setisOpenProfiel] = useState(false)
   const [authUser, setauthUser] = useState({})
-  const [EditableData, setEditableData] = useState({})
-  const [selectedFile, setselectedFile] = useState(null)
   console.log("authUser::", authUser);
 
   useEffect(() => {
-    const localData = JSON.parse(localStorage.getItem("authUser"))
-    setauthUser(localData)
-    setEditableData({ username: localData.username, email: localData.email })
+    setauthUser(JSON.parse(localStorage.getItem("authUser")))
   }, [])
 
   const handleOpenProfileCard = () => {
     console.log("caleld");
     setisOpenProfiel(true)
   }
-  const handleUpdateProfile = async () => {
+  const handleUpdateProfile = () => {
     console.log("");
-    const formData = new FormData()
-    formData.append('username', EditableData.username)
-    formData.append('email', EditableData.email)
-    formData.append('image', selectedFile)
-    const uResponse = await PatchApiCall(`update-user/${authUser?._id}`, formData)
-    console.log("response of edit user::", uResponse);
-    if (uResponse.success == true) {
 
-      localStorage.setItem("authUser", JSON.stringify(uResponse.update_user))
-    }
-
-
-  }
-
-  const handleFileChange = (e) => {
-    setselectedFile(e.target.files[0])
   }
   return (
     <CDropdown variant="nav-item">
@@ -82,8 +59,56 @@ const AppHeaderDropdown = () => {
           <CIcon icon={cilLockLocked} className="me-2" />
           Lock Account
         </CDropdownItem>
+        {/* <CDropdownItem href="#">
+          <CIcon icon={cilBell} className="me-2" />
+          Updates
+          <CBadge color="info" className="ms-2">
+            42
+          </CBadge>
+        </CDropdownItem>
+        <CDropdownItem href="#">
+          <CIcon icon={cilEnvelopeOpen} className="me-2" />
+          Messages
+          <CBadge color="success" className="ms-2">
+            42
+          </CBadge>
+        </CDropdownItem>
+        <CDropdownItem href="#">
+          <CIcon icon={cilTask} className="me-2" />
+          Tasks
+          <CBadge color="danger" className="ms-2">
+            42
+          </CBadge>
+        </CDropdownItem>
+        <CDropdownItem href="#">
+          <CIcon icon={cilCommentSquare} className="me-2" />
+          Comments
+          <CBadge color="warning" className="ms-2">
+            42
+          </CBadge>
+        </CDropdownItem> */}
+        {/* <CDropdownHeader className="bg-body-secondary fw-semibold my-2">Settings</CDropdownHeader> */}
 
-        <Modal isOpen={isOpenProfiel} toggle={() => setisOpenProfiel(false)}>
+        {/* <CDropdownItem href="#">
+          <CIcon icon={cilSettings} className="me-2" />
+          Settings
+        </CDropdownItem>
+        <CDropdownItem href="#">
+          <CIcon icon={cilCreditCard} className="me-2" />
+          Payments
+          <CBadge color="secondary" className="ms-2">
+            42
+          </CBadge>
+        </CDropdownItem>
+        <CDropdownItem href="#">
+          <CIcon icon={cilFile} className="me-2" />
+          Projects
+          <CBadge color="primary" className="ms-2">
+            42
+          </CBadge>
+        </CDropdownItem>
+        <CDropdownDivider /> */}
+        <Modal isOpen={true} toggle={() => setisOpenProfiel(false)}>
           <ModalHeader toggle={() => setisOpenProfiel(false)}>Profile</ModalHeader>
           <ModalBody>
             <Card style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
@@ -96,46 +121,23 @@ const AppHeaderDropdown = () => {
                     border: "1px solid gray",
                     justifyContent: "center",
                     borderRadius: "50%",
-                  }} src={selectedFile ? URL.createObjectURL(selectedFile) : `${import.meta.env.VITE_API_URL_USER}${authUser?.image}`} alt="user profile" />
-                  <FontAwesomeIcon icon={faCamera} onClick={() => document.getElementById("image-upload").click()} style={{
-                    position: "absolute",
-                    fontSize: "26px",
-                    top: "151px",
-                    right: "142px",
-                  }} />
-                  <input type='file' id='image-upload' style={{ display: "none" }}
-                    accept="image/*"
-                    onChange={handleFileChange} />
+                  }} src={`${import.meta.env.VITE_API_URL_IMAGE}${authUser?.image}`} alt="user profile"/>
                 </div>
               </Row>
 
               <Row style={{ padding: "10px" }}>
-                <input type='text' style={{ outline: "none" }} value={EditableData?.username} onChange={(e) => setEditableData({ ...EditableData, username: e.target.value })} />
-                {/* {true && authUser?.username} */}
+                {true && authUser?.username}
               </Row>
 
               <Row style={{ padding: "10px" }}>
-                <input type='email' value={EditableData?.email} onChange={(e) => setEditableData({ ...EditableData, email: e.target.value })} />
-                {/* {true && authUser?.email} */}
+                {true && authUser?.email}
               </Row>
-              {/* <Row> */}
-              <div style={{
-                alignSelf: "flex-end",
-                marginRight: "5px",
-                textDecoration: "underline",
-                color: "#3d3dc5",
-                cursor:"pointer"
-              }}>
-                Change Password?
-
-              </div>
-              {/* </Row> */}
             </Card>
           </ModalBody>
           <ModalFooter>
             <Button className='btn btn-danger' onClick={() => setisOpenProfiel(false)}>Cancel</Button>
             <Button className='btn btn-success' onClick={handleUpdateProfile}>Save</Button>
-            {/* <Button onClick={} className='btn btn-warning'>Log out</Button> */}
+            <Button className='btn btn-warning'>Log out</Button>
           </ModalFooter>
         </Modal>
 

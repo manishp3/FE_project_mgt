@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import { Prev } from 'react-bootstrap/esm/PageItem';
 // import Project from './Projects';
 
-const ProjectsPage = () => {
+const StaredProjects = () => {
   const navigate = useNavigate()
   const [isCreateProjectModalOpen, setisCreateProjectModalOpen] = useState(false)
   const [iscreateProjectDisabled, setiscreateProjectDisabled] = useState(false)
@@ -32,7 +32,7 @@ const ProjectsPage = () => {
   const [AllProjects, setAllProjects] = useState([])
   // const [projectMember_id, setprojectMember_id] = useState(null)
   async function getProjectsDetails() {
-    const response = await GetApiCall(`projects?type=A`);
+    const response = await GetApiCall(`projects?type=S`);
     setAllProjects(response.data.projects)
     console.log("getProjectsDetails data::", response);
     // return response;
@@ -83,12 +83,6 @@ const ProjectsPage = () => {
 
     const resp = await PostApiCall("project_c/", payload)
     console.log("respopnse of create project::", resp);
-    if (resp.success == true) {
-      toast.success(resp.msg, " ")
-    }else
-    {
-      toast.error(resp.msg, " ")
-    }
     setiscreateProjectDisabled(false);
     setprojectData({
       projectname: "",
@@ -337,4 +331,4 @@ const ProjectsPage = () => {
   );
 };
 
-export default ProjectsPage;
+export default StaredProjects;

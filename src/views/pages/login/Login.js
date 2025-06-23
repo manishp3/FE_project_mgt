@@ -350,6 +350,7 @@ const Login = () => {
     if (response.success == true) {
       setOtp("");
       localStorage.setItem("token", response.token);
+      localStorage.setItem("authUser", JSON.stringify(response.user));
       navigate("/dashboard");
     }
   };

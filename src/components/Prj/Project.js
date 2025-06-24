@@ -10,6 +10,8 @@ import CommonGrid from '../utils/CommonGrid';
 import moment from "moment";
 import { Card, Col, Row } from 'reactstrap';
 import { toast } from 'react-toastify';
+import { MdKeyboardArrowUp, MdKeyboardArrowDown } from 'react-icons/md';
+import { FaEquals } from "react-icons/fa";
 
 
 // import Project from './Projects';
@@ -39,12 +41,17 @@ const Project = () => {
     { label: "In Progress", value: "In Progress" },
     { label: "Done", value: "Done" },
   ]
-  const taskPriority = [
-    { label: "Low", value: "Low" },
-    { label: "Normal", value: "Normal" },
-    { label: "High", value: "High" },
-  ]
+  // const taskPriority = [
+  //   { label: "Low", value: "Low" },
+  //   { label: "Normal", value: "Normal" },
+  //   { label: "High", value: "High" },
+  // ]
 
+  const taskPriority = [
+    { label: "High", value: "High", icon: <MdKeyboardArrowUp /> },
+    { label: "Normal", value: "Normal", icon: <FaEquals /> },
+    { label: "Low", value: "Low", icon: <MdKeyboardArrowDown /> },
+  ];
   const headers = ['Task', "Summary", "Status", "Assignee", "Priority", "Due Date", "Reference", "Created On"]
   const accessorKey = ['label', "summary", "status", "assign_to", "priority", "due_date", "image", "createdAt"]
   const [mainDate, setmainDate] = useState([])
@@ -385,6 +392,12 @@ const Project = () => {
                   value={selectedMember}
                   isMulti={false}
                   onChange={(e) => handleMemberChange(e)}
+                  getOptionLabel={(e) => (
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      {e?.image}
+                      {e?.label}
+                    </div>
+                  )}
                 />
               </div>
             </Col>
@@ -396,7 +409,12 @@ const Project = () => {
                   value={selectedPriority}
                   isMulti={false}
                   onChange={(e) => handlePriorityChange(e)}
-
+                  getOptionLabel={(e) => (
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ color: "orange" }}>{e.icon}</span>
+                      {e.label}
+                    </div>
+                  )}
                 />
               </div>
 

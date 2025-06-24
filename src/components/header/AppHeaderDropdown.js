@@ -25,10 +25,11 @@ import CIcon from '@coreui/icons-react'
 
 import avatar8 from './../../assets/images/avatars/8.jpg'
 
-import { Button, Card, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap'
+import { Button, Card, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCamera } from '@fortawesome/free-solid-svg-icons'
-import { PatchApiCall } from '../../ApiCall'
+import { GetApiCall, PatchApiCall, PostApiCall } from '../../ApiCall'
+import { toast } from 'react-toastify'
 
 const AppHeaderDropdown = () => {
 
@@ -36,13 +37,13 @@ const AppHeaderDropdown = () => {
   const [authUser, setauthUser] = useState({})
   const [EditableData, setEditableData] = useState({})
   const [selectedFile, setselectedFile] = useState(null)
-  console.log("authUser::", authUser);
-
+  
   useEffect(() => {
+    console.log("authUser useEffect::", authUser);
     const localData = JSON.parse(localStorage.getItem("authUser"))
     setauthUser(localData)
     setEditableData({ username: localData.username, email: localData.email })
-  }, [])
+  }, [isOpenProfiel])
 
   const handleOpenProfileCard = () => {
     console.log("caleld");
@@ -60,17 +61,71 @@ const AppHeaderDropdown = () => {
 
       localStorage.setItem("authUser", JSON.stringify(uResponse.update_user))
     }
-
-
   }
 
   const handleFileChange = (e) => {
     setselectedFile(e.target.files[0])
   }
+  const [isOpenChangePwdModal, setisOpenChangePwdModal] = useState(false)
+  const [chagepwdData, setchagepwdData] = useState({
+    oldpassword: "",
+    newpassword: ""
+  })
+  const toggleChangePassword = () => {
+    setchagepwdData({
+      oldpassword: "",
+      newpassword: ""
+
+    })
+    setisOpenChangePwdModal(!isOpenChangePwdModal)
+  }
+  const handlePasswordonChange = (e) => {
+    const { name, value } = e.target;
+    setchagepwdData((pre) => ({
+      ...pre,
+      [name]: value
+    }))
+  }
+
+  console.log("change-password:: chagepwdData", chagepwdData);
+  const handleChangePassword = async () => {
+    console.log("change-password:: functino called", chagepwdData);
+    let valid = true
+    if (!chagepwdData.oldpassword) {
+      valid = false
+    }
+    if (!chagepwdData.newpassword) {
+      valid = false
+    }
+    if (!valid) return 0;
+    const payload = {
+      oldPassword: chagepwdData.oldpassword,
+      newPassword: chagepwdData.newpassword,
+      id: authUser._id
+    }
+    const udata = await PostApiCall("change-password", payload)
+    console.log("change-password::", udata);
+    if (udata.success == true) {
+      localStorage.setItem('authUser', JSON.stringify(udata.update_user))
+      localStorage.setItem('token', udata.token)
+      toast.success(udata.msg)
+      setisOpenChangePwdModal(false)
+    }
+    else{
+      toast.error("Somethin wrong in change password ")
+    }
+     setchagepwdData({
+      oldpassword: "",
+      newpassword: ""
+
+    })
+    setisOpenChangePwdModal(false)
+  }
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
-        <CAvatar src={avatar8} size="md" />
+        {/* <CAvatar src={authUser.image ? authUser?.image : avatar8} size="md" /> */}
+        <img src={authUser.image ? authUser?.image : avatar8} />
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
@@ -96,7 +151,7 @@ const AppHeaderDropdown = () => {
                     border: "1px solid gray",
                     justifyContent: "center",
                     borderRadius: "50%",
-                  }} src={selectedFile ? URL.createObjectURL(selectedFile) : `${import.meta.env.VITE_API_URL_USER}${authUser?.image}`} alt="user profile" />
+                  }} src={selectedFile ? URL.createObjectURL(selectedFile) : `${import.meta.env.VITE_API_URL_USER}${authUser?.image}`} alt="Select profile image" />
                   <FontAwesomeIcon icon={faCamera} onClick={() => document.getElementById("image-upload").click()} style={{
                     position: "absolute",
                     fontSize: "26px",
@@ -115,7 +170,7 @@ const AppHeaderDropdown = () => {
               </Row>
 
               <Row style={{ padding: "10px" }}>
-                <input type='email' value={EditableData?.email} onChange={(e) => setEditableData({ ...EditableData, email: e.target.value })} />
+                <input type='email' disabled value={EditableData?.email} onChange={(e) => setEditableData({ ...EditableData, email: e.target.value })} />
                 {/* {true && authUser?.email} */}
               </Row>
               {/* <Row> */}
@@ -124,9 +179,9 @@ const AppHeaderDropdown = () => {
                 marginRight: "5px",
                 textDecoration: "underline",
                 color: "#3d3dc5",
-                cursor:"pointer"
+                cursor: "pointer"
               }}>
-                Change Password?
+                <p onClick={() => setisOpenChangePwdModal(true)}>Change Password?</p>
 
               </div>
               {/* </Row> */}
@@ -139,6 +194,27 @@ const AppHeaderDropdown = () => {
           </ModalFooter>
         </Modal>
 
+        <Modal isOpen={isOpenChangePwdModal} toggle={toggleChangePassword}>
+          <ModalHeader>Change Password</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col>
+                <input placeholder='Enter Old Password' type='text' value={chagepwdData.oldpassword} name="oldpassword" onChange={(e) => handlePasswordonChange(e)} />
+              </Col>
+              <Col>
+                <input placeholder='Enter New Password' type='text' value={chagepwdData.newpassword} name="newpassword" onChange={(e) => handlePasswordonChange(e)} />
+
+              </Col>
+
+              {/* </Row>
+            <Row> */}
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button className='btn btn-danger' onClick={toggleChangePassword}>Cancel</Button>
+            <Button className='btn btn-success' onClick={handleChangePassword}>Change</Button>
+          </ModalFooter>
+        </Modal>
       </CDropdownMenu>
     </CDropdown >
   )

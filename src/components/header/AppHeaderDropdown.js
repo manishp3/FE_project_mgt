@@ -28,7 +28,7 @@ import avatar8 from './../../assets/images/avatars/8.jpg'
 import { Button, Card, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCamera } from '@fortawesome/free-solid-svg-icons'
-import { GetApiCall, PatchApiCall, PostApiCall } from '../../ApiCall'
+import { PatchApiCall, PostApiCall } from '../../ApiCall'
 import { toast } from 'react-toastify'
 
 const AppHeaderDropdown = () => {
@@ -37,7 +37,7 @@ const AppHeaderDropdown = () => {
   const [authUser, setauthUser] = useState({})
   const [EditableData, setEditableData] = useState({})
   const [selectedFile, setselectedFile] = useState(null)
-  
+
   useEffect(() => {
     console.log("authUser useEffect::", authUser);
     const localData = JSON.parse(localStorage.getItem("authUser"))
@@ -58,7 +58,7 @@ const AppHeaderDropdown = () => {
     const uResponse = await PatchApiCall(`update-user/${authUser?._id}`, formData)
     console.log("response of edit user::", uResponse);
     if (uResponse.success == true) {
-
+      setisOpenProfiel(false)
       localStorage.setItem("authUser", JSON.stringify(uResponse.update_user))
     }
   }
@@ -111,10 +111,10 @@ const AppHeaderDropdown = () => {
       toast.success(udata.msg)
       setisOpenChangePwdModal(false)
     }
-    else{
+    else {
       toast.error("Somethin wrong in change password ")
     }
-     setchagepwdData({
+    setchagepwdData({
       oldpassword: "",
       newpassword: ""
 
@@ -123,9 +123,9 @@ const AppHeaderDropdown = () => {
   }
   return (
     <CDropdown variant="nav-item">
-      <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
+      <CDropdownToggle placement="bottom-end" title="Profile" className="py-0 pe-0" caret={false}>
         {/* <CAvatar src={authUser.image ? authUser?.image : avatar8} size="md" /> */}
-        <img src={authUser.image ? authUser?.image : avatar8} />
+        <img src={authUser.image ? import.meta.env.VITE_API_URL_USER + authUser?.image : avatar8} width="30px" height="30px" style={{ borderRadius: "50%" }} />
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>

@@ -74,6 +74,13 @@ const Project = () => {
     }
   }, [projectTasks]);
 
+
+  // useEffect(() => {
+  //   if(projectMembers && projectMembers.length>0){
+  //     const updatedMembers=
+  //   }
+  // }, [projectMembers])
+
   console.log("location data::", location);
   // console.log("location data::1", location?.state?.project_id);
   const getProjectTask = async () => {
@@ -81,18 +88,16 @@ const Project = () => {
       const project_id = location?.state?.project_id
       const response = await GetApiCall(`project/${project_id}`)
 
+      // if (data.data.success == true) {
+
       console.log("single project tasks detail:", response);
-      setprojectMembers(response.data.project.members)
-      setproject(response.data.project)
+      // }
 
       // const data = await GetApiCall(`project-members/${project_id}`)
       // console.log("data.data.success::1", data);
-      // if (data.data.success == true) {
-      //   console.log("data.data.success::", data.data.members);
-
-      //    setProjectMembers(data.data.members)
-      // }
       if (response.data.success == true) {
+        setprojectMembers(response.data.project.members)
+        setproject(response.data.project)
         const tResponse = await GetApiCall(`gettasks/${response.data.project._id}`)
         if (tResponse.data.success == true) {
           setprojectTasks(tResponse.data.tasks)
@@ -103,7 +108,6 @@ const Project = () => {
     }
   }
   useEffect(() => {
-
     getProjectTask()
   }, [location])
 
@@ -155,6 +159,8 @@ const Project = () => {
       timeline: null,
       attachement: null,
     })
+    setselectedMember([])
+    setselectedPriority([])
   }
   console.log("taskData::", imageData);
 
@@ -303,45 +309,51 @@ const Project = () => {
             marginBottom: "20px",
           }}
         >
-          <div>
-            <p style={{ margin: 0, fontSize: "16px" }}>
-              <span style={{ fontWeight: "bold", color: "#333" }}>Project: </span>
-              {project?.project_name}
-            </p>
-            <p style={{ margin: 0, fontSize: "14px", color: "#666" }}>
-              <span style={{ fontWeight: "bold", color: "#333" }}>Members: </span>
-              {projectMembers.map((member, index) => (
-                <span key={member.value}>
-                  {member.label}
-                  {index < projectMembers.length - 1 && ", "}
-                </span>
-              ))}
-              {project?.is_star == 1 &&
-                <p style={{
-                  margin: 0, fontSize: "16px", position: "absolute",
-                  top: "27px",
-                  right: "74px"
-                }}>
-                  <span style={{ fontWeight: "bold", color: "#333" }}><FontAwesomeIcon icon={faStar} /> </span>
+          <Row>
+            <Col md={11}>
+              <Col style={{ margin: 0, fontSize: "16px" }}>
+                <span style={{ fontWeight: "bold", color: "#333" }}>Project: </span>
+                {project?.project_name}
+              </Col>
+              <Col style={{ margin: 0, fontSize: "14px", color: "#666" }}>
+                <span style={{ fontWeight: "bold", color: "#333" }}>Members: </span>
+                {projectMembers.map((member, index) => (
+                  <span key={member.value}>
+                    <img src={import.meta.env.VITE_API_URL_USER + member.icon} height="30px" width="30px" style={{ borderRadius: "50%" }} />
+                    {member.label}
+                    {index < projectMembers.length - 1 && ", "}
+                  </span>
+                ))}
+                {project?.is_star == 1 &&
+                  <p style={{
+                    // margin: 0,
+                    fontSize: "16px", position: "absolute",
+                    // top: "27px",
+                    // right: "74px"
+                  }}>
+                    <span style={{ fontWeight: "bold", color: "#333" }}><FontAwesomeIcon icon={faStar} /> </span>
 
-                </p>}
-            </p>
-          </div>
-          <button style={{ border: "none" }}>
-            <FontAwesomeIcon
-              onClick={() => setdeleteProjectModal(true)}
-              title='Delete Project'
-              icon={faTrash}
-              style={{
-                color: "red",
-                fontSize: "20px",
-                cursor: "pointer",
-                transition: "transform 0.2s ease",
-              }}
-              onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.2)")}
-              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            />
-          </button>
+                  </p>}
+              </Col>
+            </Col>
+            <Col>
+              <button style={{ border: "none" }}>
+                <FontAwesomeIcon
+                  onClick={() => setdeleteProjectModal(true)}
+                  title='Delete Project'
+                  icon={faTrash}
+                  style={{
+                    color: "red",
+                    fontSize: "20px",
+                    cursor: "pointer",
+                    transition: "transform 0.2s ease",
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.2)")}
+                  onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                />
+              </button>
+            </Col>
+          </Row>
         </div>
 
         <div style={{
@@ -394,7 +406,7 @@ const Project = () => {
                   onChange={(e) => handleMemberChange(e)}
                   getOptionLabel={(e) => (
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      {e?.image}
+                      {<img src={import.meta.env.VITE_API_URL_USER + e.icon} height="30px" width="30px" style={{ borderRadius: "50%" }} />}
                       {e?.label}
                     </div>
                   )}

@@ -85,8 +85,7 @@ const ProjectsPage = () => {
     console.log("respopnse of create project::", resp);
     if (resp.success == true) {
       toast.success(resp.msg, " ")
-    }else
-    {
+    } else {
       toast.error(resp.msg, " ")
     }
     setiscreateProjectDisabled(false);
@@ -117,7 +116,6 @@ const ProjectsPage = () => {
 
   }
   const [projectId, setprojectId] = useState(null)
-  const [openEditModal, setopenEditModal] = useState(false)
   console.log("AllProjects data::", AllProjects);
   const handleProjectStar = async (project) => {
     console.log("project data::", project);
@@ -250,7 +248,11 @@ const ProjectsPage = () => {
             <div onClick={() => navigate("project", { state: { project_id: project._id } })}>
               <p style={{ margin: 0, fontWeight: 500 }}>Project Name :{project?.project_name.length > 10 ? project?.project_name.slice(0, 17) : project?.project_name}</p>
               <p>Total Tasks: {project?.total_task}</p>
-              <p>Members: {project?.members.length}</p>
+              <p> <span style={{ paddingRight: "10px" }}>Members:</span>
+                {
+                  project?.members.length > 0 && project.members.map((member) =>
+                    <img src={import.meta.env.VITE_API_URL_USER + member.icon} height="30px" width="30px" style={{ borderRadius: "50%", border: "1px solid gray", zIndex: project.members.length - index, position: "relative", marginLeft: index == 0 ? "-5px" : "-10px" }} title={member.label} />
+                  )}</p>
 
             </div>
 

@@ -63,7 +63,7 @@ const routes = [
   // { path: '/theme', name: 'Theme', element: Colors, exact: true },
   // { path: '/theme/colors', name: 'Colors', element: Colors },
   // { path: 'profile', name: 'Profile', element: Profile_Page },
-  { path: 'projects', name: 'Projects', element: ProjectsPage },
+  // { path: 'projects', name: 'Projects', element: ProjectsPage },
   { path: 'projects', name: 'Projects', element: ProjectsPage },
   { path: 'sprojects/', name: 'Projects', element: StaredProject },
   { path: '/projects/project', name: 'Project', element: Project },

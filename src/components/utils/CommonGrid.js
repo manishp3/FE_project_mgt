@@ -59,8 +59,8 @@ const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
                     header,
                     Cell: ({ cell, row }) => (
                         <span style={{ display: "flex", cursor: "pointer", alignItems: "center" }}>
-                            <img src={import.meta.env.VITE_API_URL_USER + row.original.assign_to.image} height="30px" width="30px" style={{ borderRadius: "50%", }} />
-                            <p>{row.original.assign_to.email}</p>
+                            <img src={import.meta.env.VITE_API_URL_USER + row.original?.assign_to?.image} height="30px" width="30px" style={{ borderRadius: "50%", }} />
+                            <p>{row.original?.assign_to?.email}</p>
                         </span>
 
                     )

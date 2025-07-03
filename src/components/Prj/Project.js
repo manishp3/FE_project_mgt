@@ -151,14 +151,16 @@ const Project = () => {
     // }
   }
   const handleMemberChange = (data) => {
-    setselectedMember(data)
+    console.log("handleMemberChange::", data);
+
+    setselectedMember([data])
   }
   const openCreateTaskModal = () => {
     console.log("im called");
 
     setisOpenTaskModal(true)
   }
-  console.log("im called selectedMember::", selectedPriority);
+  console.log("im called selectedMember::", selectedMember);
   const toggleTaskModal = () => {
     setisOpenTaskModal(!isOpenTaskModal)
     settaskData({
@@ -170,10 +172,11 @@ const Project = () => {
     setselectedMember([])
     setselectedPriority([])
   }
-  console.log("taskData::", imageData);
+  console.log("taskData::", selectedMember);
 
   const [isSUbmitClick, setisSUbmitClick] = useState(false)
   const handleCreateTask = async () => {
+    console.log("submited members",selectedMember);
 
     setisSUbmitClick(true)
     const formData = new FormData()
@@ -182,7 +185,8 @@ const Project = () => {
     formData.append("status", selectedStatus.value)
     formData.append("priority", selectedPriority.value)
     formData.append("due_date", taskData.timeline)
-    formData.append("assign_to", selectedMember.value)
+    // formData.append("assign_to", selectedMember.value)
+    formData.append("assign_to", selectedMember)
     formData.append("image", imageData)
     // const payload = {
     //   label: taskData.label,
@@ -222,6 +226,9 @@ const Project = () => {
       setselectedMember([])
       setisOpenTaskModal(false)
       getProjectTask()
+    }
+    else {
+      toast.success(response.msg, "")
     }
     setisSUbmitClick(false);
   }
@@ -274,6 +281,7 @@ const Project = () => {
 
       // Find the member object that matches the assign_to ID
       const assignedMember = projectMembers.find(prj => prj.value === data.assign_to);
+      console.log("get members from db::", assignedMember);
 
       settaskData({
         label: data.label,
@@ -377,8 +385,8 @@ const Project = () => {
   const [dbHour, setdbHour] = useState(0)
   const handleTimeTrackingChange = (data) => {
     const result = convertInputedToMainFormat(data)
-    console.log("log of results::",result);
-    
+    console.log("log of results::", result);
+
     if (!result.isValid) {
       setTimeTrack(null);
       setisValid(false);

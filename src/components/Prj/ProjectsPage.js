@@ -55,12 +55,12 @@ const ProjectsPage = () => {
 
   console.log("setisCreateProjectModalOpen", isCreateProjectModalOpen);
   const openCreateProjectModal = () => {
+    setiscreateProjectDisabled(false)
     setisCreateProjectModalOpen(true)
     console.log("openCreateProjectModal");
   }
 
   const handleCreateProject = async () => {
-    // setiscreateProjectDisabled(true)
     // const mapIds = ProjectMembers.map((id) => (
     //   id.value
     // ))
@@ -75,6 +75,7 @@ const ProjectsPage = () => {
     }
 
     if (!valid) return 0;
+    setiscreateProjectDisabled(true)
     const payload = {
       project_name: projectData.projectname,
       members: ProjectMembers
@@ -88,10 +89,10 @@ const ProjectsPage = () => {
     } else {
       toast.error(resp.msg, " ")
     }
-    setiscreateProjectDisabled(false);
     setprojectData({
       projectname: "",
     })
+    setiscreateProjectDisabled(false);
     setProjectMembers([])
     setisCreateProjectModalOpen(false);
     console.log("respopnse of create project::1", resp);
@@ -151,10 +152,23 @@ const ProjectsPage = () => {
 
   }
   const handleProjectEdit = async () => {
-    console.log("ProjectIds data::", ProjectMembers);
+    console.log("ProjectIds data projectdata::", projectData);
+    let valid = true
+    if (projectData.projectname == "") {
+      toast.error("Please Enter Project name!")
+      valid = false
+    }
+    else if (ProjectMembers.length < 1) {
+
+      toast.error("Please Select Project member!")
+      valid = false
+    }
+    if (!valid) return;
+    setiscreateProjectDisabled(true)
     const payload = {
       project_name: projectData.projectname,
-      members: ProjectMembers.map(e => e.value)
+      // members: ProjectMembers.map(e => e.value)
+      members: ProjectMembers
     }
     console.log("ProjectIds data::123", payload);
 
@@ -163,6 +177,7 @@ const ProjectsPage = () => {
     if (uresponse.success == true) {
       getProjectsDetails()
     }
+    setiscreateProjectDisabled(false)
     setisEdit(0)
     setprojectId(null)
     setisCreateProjectModalOpen(false)
@@ -182,6 +197,7 @@ const ProjectsPage = () => {
     setisEdit(1)
     setprojectId(id)
     setProjectMembers(data.members)
+    setiscreateProjectDisabled(false)
     setisCreateProjectModalOpen(true)
   }
   return (

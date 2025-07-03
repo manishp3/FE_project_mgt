@@ -3,15 +3,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFolderOpen, faAdd, faTrash, faStar } from '@fortawesome/free-solid-svg-icons';
 import { DeleteApiCall, GetApiCall, PatchApiCall, PostApiCall } from '../../ApiCall';
 import Select from "react-select"
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'react-bootstrap';
-import { CHeader, CModal, CModalBody, CModalFooter, CModalHeader, CButton, CInputGroup, CInputGroupText, CFormInput } from '@coreui/react';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader, ProgressBar } from 'react-bootstrap';
+import { CHeader, CModal, CModalBody, CModalFooter, CModalHeader, CButton, CInputGroup, CInputGroupText, CFormInput, CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem } from '@coreui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CommonGrid from '../utils/CommonGrid';
 import moment from "moment";
+import { IoMdAdd } from "react-icons/io";
 import { Card, Col, Row } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { MdKeyboardArrowUp, MdKeyboardArrowDown } from 'react-icons/md';
 import { FaEquals } from "react-icons/fa";
+import { convertInputedToMainFormat } from '../service/TimeFormat';
 
 
 // import Project from './Projects';
@@ -52,23 +54,24 @@ const Project = () => {
     { label: "Normal", value: "Normal", icon: <FaEquals /> },
     { label: "Low", value: "Low", icon: <MdKeyboardArrowDown /> },
   ];
-  const headers = ['Task', "Summary", "Status", "Assignee", "Priority", "Due Date", "Reference", "Created On"]
-  const accessorKey = ['label', "summary", "status", "assign_to", "priority", "due_date", "image", "createdAt"]
+  const headers = ['Task', "Summary", "Status", "Assignee", "Priority", "Due Date", "Reference", "Time Tracking", "Created On"]
+  const accessorKey = ['label', "summary", "status", "assign_to", "priority", "due_date", "image", "fake", "createdAt"]
   const [mainDate, setmainDate] = useState([])
   console.log("projectTasks 1::", projectMembers);
 
   console.log("log of selected status::", selectedStatus);
 
   useEffect(() => {
-    if (projectTasks && projectTasks.length > 0) {
+    if (projectTasks && projectTasks != []) {
       const updatedData = projectTasks.map((project) => ({
         ...project, // keep other fields
         // priority: project.priority, // assuming this is not a date
         due_date: moment(project.due_date).format("DD-MM-YYYY"),
         createdAt: moment(project.createdAt).format("DD-MM-YYYY hh:MM A"),
         // to get name of mail by id
-        assign_to: projectMembers.map(prj => project.
-          assign_to == prj.value && prj.label)
+        // assign_to: projectMembers.map(prj => project.
+        //   assign_to._id == prj.value && prj.label)
+
       }));
       setmainDate(updatedData);
     }
@@ -86,6 +89,7 @@ const Project = () => {
   const getProjectTask = async () => {
     if (location?.state?.project_id != null) {
       const project_id = location?.state?.project_id
+      console.log("im called on audit 1");
       const response = await GetApiCall(`project/${project_id}`)
 
       // if (data.data.success == true) {
@@ -93,14 +97,18 @@ const Project = () => {
       console.log("single project tasks detail:", response);
       // }
 
-      // const data = await GetApiCall(`project-members/${project_id}`)
-      // console.log("data.data.success::1", data);
+
+      console.log("im called on audit 2");
       if (response.data.success == true) {
         setprojectMembers(response.data.project.members)
+        console.log("im called on audit 3");
         setproject(response.data.project)
         const tResponse = await GetApiCall(`gettasks/${response.data.project._id}`)
+        console.log("im called on audit 4", tResponse);
         if (tResponse.data.success == true) {
-          setprojectTasks(tResponse.data.tasks)
+          console.log("im called on audit 5");
+          setprojectTasks(tResponse?.data?.tasks)
+
           // setrefresData(1)
         }
       }
@@ -164,7 +172,10 @@ const Project = () => {
   }
   console.log("taskData::", imageData);
 
+  const [isSUbmitClick, setisSUbmitClick] = useState(false)
   const handleCreateTask = async () => {
+
+    setisSUbmitClick(true)
     const formData = new FormData()
     formData.append("label", taskData.label)
     formData.append("summary", taskData.summary)
@@ -212,6 +223,7 @@ const Project = () => {
       setisOpenTaskModal(false)
       getProjectTask()
     }
+    setisSUbmitClick(false);
   }
   const handlePriorityChange = (data) => {
     console.log("");
@@ -283,8 +295,111 @@ const Project = () => {
     const dresponse = await DeleteApiCall(`task_d/${id}`)
     console.log("log of delete dresponse::", dresponse);
     if (dresponse.success == true) {
+      toast.success(dresponse.msg, " ")
       getProjectTask()
     }
+  }
+  const [TimeModal, setTimeModal] = useState(false)
+  const [TimeId, setTimeId] = useState(null)
+  const handleTimeTrackingModal = (id) => {
+    setTimeId(id)
+    setTimeModal(true)
+  }
+  const toggleTimeModal = () => {
+    setTimeId(null)
+    setTimeModal(false)
+  }
+  const [TimeTrack, setTimeTrack] = useState(null)
+  const [isValid, setisValid] = useState(false)
+  console.log("TimeTrack::", TimeTrack);
+
+  // const handleTimeTrackingChange = (data) => {
+  //   console.log("log of time::", data);
+  //   const trimmedTime = data.trim().toLowerCase()
+  //   if (trimmedTime == "") {
+  //     setTimeTrack(null)
+  //     setisValid(false)
+  //     return;
+  //   }
+  //   else {
+  //     const formattedTime = convertInputedToMainFormat(trimmedTime)
+  //     // const parts = trimmedTime.split(/\s+/);
+  //     // const validPartRegex = /^(\d+)([mhdw])$/;
+  //     // let totalMinutes = 0
+
+  //     // for (const part of parts) {
+  //     //   const match = part.match(validPartRegex)
+  //     if (!formattedTime) {
+  //       // console.log("log of time else ::", match);
+  //       setTimeTrack(null)
+  //       setisValid(false)
+  //       return;
+  //     }
+  //     else {
+  //       setisValid(false)
+  //       setTimeTrack(formattedTime.trim());
+  //     }
+  //   }
+  //   //   console.log("log of time match ::", match);
+  //   //   setisValid(true)
+  //   //   const value = parseInt(match[1], 10)
+  //   //   const unit = match[2]
+  //   //   switch (unit) {
+  //   //     case 'm':
+  //   //       totalMinutes += value
+  //   //       break;
+  //   //     case 'h':
+  //   //       totalMinutes += value * 60
+  //   //       break;
+  //   //     case 'd':
+  //   //       totalMinutes += value * 60 * 24;
+  //   //       break;
+  //   //     case 'w':
+  //   //       totalMinutes += value * 60 * 24 * 7;
+  //   //       break;
+  //   //   }
+  //   // }
+  //   // const weeks = Math.floor(totalMinutes / (7 * 24 * 60))
+  //   // totalMinutes %= (7 * 24 * 60)
+  //   // const days = Math.floor(totalMinutes / (24 * 60))
+  //   // totalMinutes %= (24 * 60)
+  //   // const hours = Math.floor(totalMinutes / (60))
+  //   // const minutes = totalMinutes % 60;
+  //   // let formattedTime = "";
+  //   // if (weeks > 0) formattedTime += `${weeks}w `;
+  //   // if (days > 0) formattedTime += `${days}d `;
+  //   // if (hours > 0) formattedTime += `${hours}h `;
+  //   // if (minutes > 0) formattedTime += `${minutes}m`;
+
+  //   // console.log("log of time week::", week);
+  // }
+
+  const [dbHour, setdbHour] = useState(0)
+  const handleTimeTrackingChange = (data) => {
+    const result = convertInputedToMainFormat(data)
+    console.log("log of results::",result);
+    
+    if (!result.isValid) {
+      setTimeTrack(null);
+      setisValid(false);
+      return;
+    }
+    setTimeTrack(result.formatted);
+    setdbHour(result.totalHour);
+    setisValid(true);
+  }
+  const handleTimeTrackingSave = async () => {
+    // console.log("data save::", data);
+    const formData = {
+      // time_spent: TimeTrack
+      time_spent: dbHour
+    }
+    const response = await PatchApiCall(`task_u/${TimeId}`, formData);
+    console.log("time track response::", response);
+    setTimeId(null)
+    setTimeModal(false)
+    setisValid(false)
+    getProjectTask()
   }
   const [opemImageModal, setopemImageModal] = useState(false)
   const [imageView, setimageView] = useState(null)
@@ -309,59 +424,71 @@ const Project = () => {
             marginBottom: "20px",
           }}
         >
-          <Row>
-            <Col md={11}>
-              <Col style={{ margin: 0, fontSize: "16px" }}>
-                <span style={{ fontWeight: "bold", color: "#333" }}>Project: </span>
-                {project?.project_name}
-              </Col>
-              <Col style={{ margin: 0, fontSize: "14px", color: "#666" }}>
+          <div>
+            <span style={{ fontWeight: "bold", color: "#333" }}>Project: </span>
+            {project?.project_name}
+          </div>
+          <div>
+            <CDropdown>
+              <CDropdownToggle>
                 <span style={{ fontWeight: "bold", color: "#333" }}>Members: </span>
+              </CDropdownToggle>
+              <CDropdownMenu>
                 {projectMembers.map((member, index) => (
-                  <span key={member.value}>
+                  <CDropdownItem key={member.value}>
+
                     <img src={import.meta.env.VITE_API_URL_USER + member.icon} height="30px" width="30px" style={{ borderRadius: "50%" }} />
                     {member.label}
                     {index < projectMembers.length - 1 && ", "}
-                  </span>
-                ))}
-                {project?.is_star == 1 &&
-                  <p style={{
-                    // margin: 0,
-                    fontSize: "16px", position: "absolute",
-                    // top: "27px",
-                    // right: "74px"
-                  }}>
-                    <span style={{ fontWeight: "bold", color: "#333" }}><FontAwesomeIcon icon={faStar} /> </span>
 
-                  </p>}
-              </Col>
-            </Col>
-            <Col>
-              <button style={{ border: "none" }}>
-                <FontAwesomeIcon
-                  onClick={() => setdeleteProjectModal(true)}
-                  title='Delete Project'
-                  icon={faTrash}
-                  style={{
-                    color: "red",
-                    fontSize: "20px",
-                    cursor: "pointer",
-                    transition: "transform 0.2s ease",
-                  }}
-                  onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.2)")}
-                  onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                />
-              </button>
-            </Col>
-          </Row>
+                  </CDropdownItem>
+                ))}
+              </CDropdownMenu>
+            </CDropdown>
+          </div>
+          {project?.is_star == 1 &&
+            <div>
+              <p style={{
+                // margin: 0,
+                fontSize: "16px", position: "absolute",
+                // top: "27px",
+                // right: "74px"
+              }}>
+                <span style={{ fontWeight: "bold", color: "#333" }}><FontAwesomeIcon icon={faStar} /> </span>
+
+              </p>
+            </div>
+          }
+          <div>
+
+            <button style={{ border: "none" }}>
+              <FontAwesomeIcon
+                onClick={() => setdeleteProjectModal(true)}
+                title='Delete Project'
+                icon={faTrash}
+                style={{
+                  color: "red",
+                  fontSize: "20px",
+                  cursor: "pointer",
+                  transition: "transform 0.2s ease",
+                }}
+                onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.2)")}
+                onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              />
+            </button>
+          </div>
+
         </div>
 
         <div style={{
           display: "flex",
           justifyContent: "flex-end",
+          alignItems: "center",
           margin: "5px 5px "
         }}>
-          <Button onClick={openCreateTaskModal}>Create Task</Button>
+
+          <button type="button" class="btn btn-primary waves-effect waves-light" onClick={openCreateTaskModal}><IoMdAdd /> Add Task</button>
+          {/* <Button > Create Task</Button> */}
         </div>
         <CommonGrid
           headers={headers}
@@ -372,9 +499,58 @@ const Project = () => {
           handleDelete={handleDelete}
           getedtidata={getedtidata}
           handleImageReference={handleImageReference}
+          handleTimeTrackingModal={handleTimeTrackingModal}
         />
       </Card>
 
+      {/* time modal */}
+      <Modal show={TimeModal} onHide={toggleTimeModal} size="sm">
+        <Modal.Header closeButton>
+          <Modal.Title>Time Tracking</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {isValid &&
+            <Row className='mb-2'>
+              <Col>
+
+                <ProgressBar now={100} label={`${TimeTrack}`} />
+
+              </Col>
+            </Row>
+          }
+          <Row className='mb-2'>
+            <Col>
+              <label>Time spent</label>
+            </Col>
+          </Row>
+          <Row className='mb-3'>
+            <Col>
+              <input className='form-control' type="text" onChange={(e) => handleTimeTrackingChange(e.target.value)} />
+            </Col>
+          </Row>
+          <Row>
+            <div>
+              <p className='mb-2'>Use the format: <span style={{ color: "orange", fontWeight: "bold" }}>2w 3d 7h 15m</span></p>
+              <ul>
+                <li><span style={{ fontWeight: "bold" }}>w</span> = weaks</li>
+                <li><span style={{ fontWeight: "bold" }}>d</span> = days</li>
+                <li><span style={{ fontWeight: "bold" }}>h</span> = hours</li>
+                <li><span style={{ fontWeight: "bold" }}>m</span> = minutes</li>
+              </ul>
+            </div>
+          </Row>
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" onClick={toggleTimeModal} class="btn btn-danger waves-effect waves-light">Cancel</button>
+          <button type="button" disabled={!isValid} class={isValid ? "btn btn-success waves-light" : "btn btn-light waves-effect"} onClick={handleTimeTrackingSave}>Save</button>
+          {/* <Button variant={isValid ? "success" : "light"} onClick={handleTimeTrackingSave}> */}
+
+          {/* </Button> */}
+          {/* <Button variant="danger" > */}
+
+          {/* </Button> */}
+        </Modal.Footer>
+      </Modal>
       <Modal show={isOpenTaskModal} onHide={() => toggleTaskModal()}>
         {/* isOpenTaskModal */}
         <Modal.Header closeButton>
@@ -451,25 +627,34 @@ const Project = () => {
                 />
               </div>
             </Col>
-
           </Row>
+          {/* <Row>
+            <Col>
+              <div className="mb-3">
+                <label className="form-label">Timeline</label>
+                <input type="date" name="timeline" className="form-control" onChange={(e) => handleTaskChange(e)} value={taskData.timeline} min={new Date().toISOString().split('T')[0]} />
+              </div>
+            </Col>
+          </Row> */}
           <Row>
             <Col>
               <div className="mb-3">
                 <label className="form-label">Attachment</label>
-                <input type="file" name="attachement" onChange={(e) => setimageData(e.target.files[0])} className="form-control" />
+                <input type="file" accept=".png, .jpg, .jpeg" name="attachement" onChange={(e) => setimageData(e.target.files[0])} className="form-control" />
               </div>
             </Col>
           </Row>
 
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setisOpenTaskModal(false)}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleCreateTask}>
+          <button type="button" class={"btn btn-danger success waves-light"} onClick={toggleTaskModal}>Cancel</button>
+          {/* <Button variant="secondary" onClick={() => setisOpenTaskModal(false)}>
+            Cancel
+          </Button> */}
+          <button type="button" class={"btn btn-success waves-light"} onClick={handleCreateTask}>{EditId ? "Update" : "Save"}</button>
+          {/* <Button variant="primary" onClick={handleCreateTask}>
             {EditId ? "Update" : "Create"}
-          </Button>
+          </Button> */}
         </Modal.Footer>
       </Modal >
       <Modal show={deleteProjectModal} onHide={() => setdeleteProjectModal(false)} centered>

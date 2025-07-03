@@ -1,4 +1,5 @@
 import React from 'react'
+import Page404 from './views/pages/page404/Page404'
 
 
 
@@ -106,6 +107,7 @@ const routes = [
   // { path: '/notifications', name: 'Notifications', element: Alerts, exact: true },
   // { path: '/notifications/alerts', name: 'Alerts', element: Alerts },
   { path: '/notifications/badges', name: 'Badges', element: Badges },
+  { path: '*',  element: Page404 },
   // { path: '/notifications/modals', name: 'Modals', element: Modals },
   // { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   // { path: '/widgets', name: 'Widgets', element: Widgets },

@@ -1,10 +1,17 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import React, { useMemo } from 'react'
-import { faEdit, faEye, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faEye, faPen, faTrash, faEllipsis } from '@fortawesome/free-solid-svg-icons';
+import { MdDeleteOutline, MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
+import { FaEquals } from 'react-icons/fa';
+import { GoPencil } from "react-icons/go";
+// import CreateIcon from '@material-ui/icons/Create';
+import { Badge } from 'reactstrap';
+import { RxEyeOpen } from "react-icons/rx";
+import { convertDecimalHoursToFormat, convertInputedToMainFormat } from '../service/TimeFormat';
 
 const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
-    handleDelete, getedtidata, handleImageReference }) => {
+    handleDelete, getedtidata, handleImageReference, handleTimeTrackingModal }) => {
     console.log("from common grid:: headers", headers);
     console.log("from common grid:: accessorKey", accessorKey);
     console.log("from common grid:: data", data);
@@ -22,10 +29,87 @@ const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
 
                         <span style={{ cursor: "pointer" }} onClick={() => handleImageReference(row.original.image)}>
                             {row.original.image &&
-                                <FontAwesomeIcon style={{ color: "blue", fontSize: "20px" }} icon={faEye} title="reference attachment" />}
+                                <RxEyeOpen style={{ fontSize: "20px" }} title="reference attachment" />
+                                // <FontAwesomeIcon style={{ color: "blue", fontSize: "20px" }} icon={faEye}  />
+                            }
                         </span>
 
                     )
+                };
+            }
+            if (header == "Time Tracking") {
+                return {
+                    accessorKey: accessor,
+                    header,
+                    Cell: ({ cell, row }) => {
+                        const displayTime = convertDecimalHoursToFormat(row?.original?.time_spent);
+                        console.log("displayTime::", displayTime);
+                        return (
+                            <div onClick={() => handleTimeTrackingModal(row.original._id)}>
+                                {row.original.time_spent ? <span className='badge border border-info text-info'>{displayTime}</span> : <FontAwesomeIcon size={24} icon={faEllipsis} />}
+                            </div>
+                        )
+                        // <span onClick={()=>handleTimeTrackingModal(row.original._id)}>{}</span>
+                    }
+                }
+            }
+            if (header == "Assignee") {
+                return {
+                    accessorKey: accessor,
+                    header,
+                    Cell: ({ cell, row }) => (
+                        <span style={{ display: "flex", cursor: "pointer", alignItems: "center" }}>
+                            <img src={import.meta.env.VITE_API_URL_USER + row.original.assign_to.image} height="30px" width="30px" style={{ borderRadius: "50%", }} />
+                            <p>{row.original.assign_to.email}</p>
+                        </span>
+
+                    )
+                };
+            }
+            if (header == "Status") {
+                return {
+                    accessorKey: accessor,
+                    header,
+                    Cell: ({ cell, row }) => (
+
+                        <span style={{ cursor: "pointer" }}>
+                            {/* <Badge>{row.original.status}</Badge> */}
+                            <span class="badge bg-info-subtle text-info">{row.original.status}</span>
+                        </span>
+
+                    )
+                };
+            }
+            if (header == "Priority") {
+                return {
+                    accessorKey: accessor,
+                    header,
+                    Cell: ({ cell, row }) => {
+                        if (row.original.priority == "Low") {
+                            return (
+                                <span className='badge bg-success'><MdKeyboardArrowDown style={{ color: "orange" }} />
+                                    {' ' + row.original.priority} </span>
+                            )
+                        }
+                        else if (row.original.priority == "Normal") {
+                            return (
+
+                                <span className='badge bg-info'><FaEquals style={{ color: "orange" }} />{" " + row.original.priority} </span>
+                            )
+                        }
+                        else {
+                            return (
+                                <span className='badge bg-danger'><MdKeyboardArrowUp style={{ color: "orange" }} />{" " + row.original.priority} </span>
+                            )
+
+                        }
+                        // <span style={{ cursor: "pointer" }}>
+                        //     {row.original.priority == "Low" ?
+                        //     <p>{row.original.priority + ' ' } <MdKeyboardArrowDown style={{ color: "orange" }}/></p>
+                        //         : }
+                        // </span>
+
+                    }
                 };
             }
 
@@ -54,7 +138,9 @@ const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
                                     style={{ fontSize: "22px", cursor: "pointer", padding: "5px" }}
                                     onClick={() => getedtidata(id)}
                                 >
-                                    <FontAwesomeIcon icon={faEdit} title='Edit' />
+                                    {/* <i class="ri-pencil-fill"></i> */}
+                                    <GoPencil title='Edit' />
+                                    {/* <FontAwesomeIcon icon={faPen}  /> */}
                                 </span>
                             )}
                             {allowDelete !== 0 && (
@@ -62,7 +148,8 @@ const CommonGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
                                     style={{ fontSize: "22px", cursor: "pointer", padding: "5px" }}
                                     onClick={() => handleDelete(id)}
                                 >
-                                    <FontAwesomeIcon icon={faTrash} title="delete" />
+                                    <MdDeleteOutline title="Delete" />
+                                    {/* <FontAwesomeIcon icon={faTrash}  /> */}
                                 </span>
                             )}
                         </div>

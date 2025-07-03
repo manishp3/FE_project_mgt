@@ -14,7 +14,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import { PostApiCall } from '../../../ApiCall'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
 
 const Register = () => {
@@ -169,6 +169,11 @@ const Register = () => {
                     <CButton color="success" onClick={handleSignUp}>Create Account</CButton>
                   </div>
                 </CForm>
+                  <div style={{display:"flex",justifyContent:"end"}}>
+                    <Link to='/login'>
+                    return to Login?
+                    </Link>
+                  </div>
               </CCardBody>
             </CCard>
           </CCol>

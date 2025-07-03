@@ -192,12 +192,12 @@ const ProjectsPage = () => {
         <button onClick={openCreateProjectModal} style={{ border: "none" }} title='Create project'>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="48"
-            height="48"
+            width="40"
+            height="40"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#4CAF50"
-            stroke-width="2"
+            stroke="#405189"
+            stroke-width="1.5"
             stroke-linecap="round"
             stroke-linejoin="round"
           >
@@ -234,7 +234,8 @@ const ProjectsPage = () => {
             }}
           >
             <div style={{ position: "absolute", top: "10px", right: "10px" }}>
-              <CDropdown variant="nav-item">
+              {/* <CDropdown variant="nav-item"> */}
+              <CDropdown>
                 <CDropdownToggle className="py-0 pe-0 border-0 bg-transparent" caret={false}>
                   <FontAwesomeIcon icon={faEllipsis} />
                 </CDropdownToggle>
@@ -287,6 +288,8 @@ const ProjectsPage = () => {
             </Row>
           </div>
           <div>
+            {/* <Row>
+              <Col> */}
             <label className="mb-1">Project members</label>
 
             <Select
@@ -294,16 +297,27 @@ const ProjectsPage = () => {
               value={ProjectMembers}
               // onChange={(selectedOptions) => setProjectMembers(selectedOptions)}
               onChange={(e) => handleprojectMemberChange(e)}
+              getOptionLabel={(e) => (
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  {<img src={import.meta.env.VITE_API_URL_USER + e.icon} height="30px" width="30px" style={{ borderRadius: "50%" }} />}
+                  {e?.label}
+                </div>
+              )}
               isMulti={true}
-            /></div>
+            />
+            {/* </Col>
+            </Row> */}
+          </div>
 
 
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" className="px-4" disabled={iscreateProjectDisabled}
+          <button type="button" disabled={iscreateProjectDisabled}
+            onClick={isEdit == 1 ? handleProjectEdit : handleCreateProject} class={"btn btn-success waves-light"} >Submit</button>
+          {/* <Button color="primary" className="px-4" disabled={iscreateProjectDisabled}
             onClick={isEdit == 1 ? handleProjectEdit : handleCreateProject}>
             Submit
-          </Button>
+          </Button> */}
         </ModalFooter>
       </Modal>
       <Modal isOpen={deleteProjectModal} toggle={() => { setdeleteProjectModal(false), setprojectId(null) }} centered>

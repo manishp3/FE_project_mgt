@@ -298,6 +298,7 @@ const Login = () => {
   console.log("forDatasignin email check::", forDatasignin);
   const [forgotUserMailIRef, setforgotUserMailIRef] = useState(0);
   const handleForgot = async () => {
+
     console.log("forDatasignin::", forDatasignin);
 
     if (forDatasignin.email == "") {
@@ -305,6 +306,7 @@ const Login = () => {
         ...pre,
         emailEror: 1,
       }));
+      setissignInDisabled(true)
       // return 0;
     } else {
       try {
@@ -319,8 +321,10 @@ const Login = () => {
         console.log("log of resposen error::", error);
       } finally {
         setOtp("");
+        setissignInDisabled(false)
       }
     }
+
   };
 
   const [otp, setOtp] = useState("");
@@ -478,7 +482,7 @@ const Login = () => {
                         </CButton>
                       </CCol>
                       <CCol xs={6} className="text-right">
-                        <CButton color="link" className="px-0"
+                        <CButton disabled={issignInDisabled} color="link" className="px-0"
                           onClick={handleForgot}
                         >
                           Forgot password?
@@ -508,7 +512,7 @@ const Login = () => {
           </CCol>
         </CRow>
         <Modal show={signInOtpMOdal} onHide={() => setsignInOtpMOdal(false)}>
-          {/* <Modal show={signInOtpMOdal}> */}
+          {/* <Modal show={true} onHide={() => setsignInOtpMOdal(false)}> */}
           <Modal.Header closeButton>
             <Modal.Title>SignIn OTP</Modal.Title>
           </Modal.Header>
@@ -524,20 +528,21 @@ const Login = () => {
                 value={otp}
                 onChange={setOtp}
                 numInputs={5}
-                
+
                 // isDisabled={true}
                 renderSeparator={<span style={{ visibility: "hidden" }}>--</span>}
-                renderInput={(props) => <input style={{
-                  width: "40px",
-                  height: "40px",
-                  margin: "0 5px",
-                  fontSize: "18px",
+                renderInput={(props) => <input {...props} />}
+                inputStyle={{
+
+                  width: "3rem",
+                  height: "3rem",
+                  margin: "0 0.4rem",
+                  fontSize: "1.5rem",
+                  borderRadius: "0.5rem",
+                  border: "1px solid #ced4da",
                   textAlign: "center",
-                  border: "1px solid #ccc",
-                  borderRadius: "6px",
-                  outline: "none",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                }} {...props} />}
+
+                }}
               />
             </div>
           </Modal.Body>

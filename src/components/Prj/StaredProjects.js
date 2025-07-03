@@ -182,18 +182,18 @@ const StaredProjects = () => {
   }
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "16px" }}>
+      {/* <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "16px" }}>
 
 
         <button onClick={openCreateProjectModal} style={{ border: "none" }} title='Create project'>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="48"
-            height="48"
+            width="40"
+            height="40"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#4CAF50"
-            stroke-width="2"
+            stroke="#405189"
+            stroke-width="1.5"
             stroke-linecap="round"
             stroke-linejoin="round"
           >
@@ -204,8 +204,57 @@ const StaredProjects = () => {
         </button>
 
 
-      </div>
+      </div> */}
 
+      {/* <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
+        {AllProjects?.map((project, index) => (
+          <div
+            title="Go to Project"
+            key={index}
+            style={{
+              height: "150px",
+              width: "300px",
+              backgroundColor: "#fff", // soft hover color
+              border: "1px solid #ccc",
+              borderRadius: "8px",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+              padding: "16px",
+              position: "relative",
+              transition: "all 0.3s ease-in-out",
+              cursor: "pointer",
+              display: "grid",
+              // gridTemplateRows:"2px",
+              gap: "10px"
+              // flexDirection: "row",
+              // justifyContent: "space-between",
+            }}
+          >
+            <div style={{ position: "absolute", top: "10px", right: "10px" }}>
+              <CDropdown>
+                <CDropdownToggle className="py-0 pe-0 border-0 bg-transparent" caret={false}>
+                  <FontAwesomeIcon icon={faEllipsis} />
+                </CDropdownToggle>
+                <CDropdownMenu className="pt-0" placement="bottom-end">
+                  <CDropdownItem onClick={() => handleOpenEditModal(project._id)}>edit</CDropdownItem>
+                  <CDropdownItem onClick={() => handleOpenDeleteModal(project._id)}>Delete</CDropdownItem>
+                  <CDropdownItem onClick={() => handleProjectStar(project)}>{project.is_star == 1 ? "Unstar Project" : "Star Project"}</CDropdownItem>
+                </CDropdownMenu>
+              </CDropdown>
+            </div>
+            <div onClick={() => navigate("project", { state: { project_id: project._id } })}>
+              <p style={{ margin: 0, fontWeight: 500 }}>Project Name :{project?.project_name.length > 10 ? project?.project_name.slice(0, 17) : project?.project_name}</p>
+              <p>Total Tasks: {project?.total_task}</p>
+              <p>Members: {project?.members.length}</p>
+
+            </div>
+
+            <div style={{ position: "absolute", bottom: "10px", right: "10px" }}>
+              <FontAwesomeIcon icon={faFolderOpen} size="2x" color="#f0ad4e" />
+            </div>
+          </div>
+        ))
+        }
+      </div> */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
         {AllProjects?.map((project, index) => (
           <div
@@ -230,7 +279,8 @@ const StaredProjects = () => {
             }}
           >
             <div style={{ position: "absolute", top: "10px", right: "10px" }}>
-              <CDropdown variant="nav-item">
+              {/* <CDropdown variant="nav-item"> */}
+              <CDropdown>
                 <CDropdownToggle className="py-0 pe-0 border-0 bg-transparent" caret={false}>
                   <FontAwesomeIcon icon={faEllipsis} />
                 </CDropdownToggle>
@@ -244,7 +294,11 @@ const StaredProjects = () => {
             <div onClick={() => navigate("project", { state: { project_id: project._id } })}>
               <p style={{ margin: 0, fontWeight: 500 }}>Project Name :{project?.project_name.length > 10 ? project?.project_name.slice(0, 17) : project?.project_name}</p>
               <p>Total Tasks: {project?.total_task}</p>
-              <p>Members: {project?.members.length}</p>
+              <p> <span style={{ paddingRight: "10px" }}>Members:</span>
+                {
+                  project?.members.length > 0 && project.members.map((member) =>
+                    <img src={import.meta.env.VITE_API_URL_USER + member.icon} height="30px" width="30px" style={{ borderRadius: "50%", border: "1px solid gray", zIndex: project.members.length - index, position: "relative", marginLeft: index == 0 ? "-5px" : "-10px" }} title={member.label} />
+                  )}</p>
 
             </div>
 
@@ -286,6 +340,12 @@ const StaredProjects = () => {
               value={ProjectMembers}
               // onChange={(selectedOptions) => setProjectMembers(selectedOptions)}
               onChange={(e) => handleprojectMemberChange(e)}
+              getOptionLabel={(e) => (
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  {<img src={import.meta.env.VITE_API_URL_USER + e.icon} height="30px" width="30px" style={{ borderRadius: "50%" }} />}
+                  {e?.label}
+                </div>
+              )}
               isMulti={true}
             /></div>
 

@@ -42,7 +42,7 @@ const ProjectsPage = () => {
     console.log("getProjectsDetails data::users", data);
     // return data;
     // setMembers(data.data.user.map(user=>user.email))
-    setMembers(data.data.user)
+    setMembers(data?.data?.user)
   }
   useEffect(() => {
 
@@ -175,6 +175,7 @@ const ProjectsPage = () => {
     const uresponse = await PatchApiCall(`project_u/${projectId}`, payload)
     console.log("response edit ::", uresponse);
     if (uresponse.success == true) {
+      toast.success(uresponse.msg)
       getProjectsDetails()
     }
     setiscreateProjectDisabled(false)

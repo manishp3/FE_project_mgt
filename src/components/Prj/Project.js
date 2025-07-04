@@ -152,8 +152,9 @@ const Project = () => {
   }
   const handleMemberChange = (data) => {
     console.log("handleMemberChange::", data);
-
-    setselectedMember([data])
+    const arrayData = [data]
+    console.log("handleMemberChange arrayData::", arrayData);
+    setselectedMember(data)
   }
   const openCreateTaskModal = () => {
     console.log("im called");
@@ -176,7 +177,7 @@ const Project = () => {
 
   const [isSUbmitClick, setisSUbmitClick] = useState(false)
   const handleCreateTask = async () => {
-    console.log("submited members",selectedMember);
+    console.log("submited members", selectedMember);
 
     setisSUbmitClick(true)
     const formData = new FormData()
@@ -186,7 +187,7 @@ const Project = () => {
     formData.append("priority", selectedPriority.value)
     formData.append("due_date", taskData.timeline)
     // formData.append("assign_to", selectedMember.value)
-    formData.append("assign_to", selectedMember)
+    formData.append("assign_to", JSON.stringify(selectedMember))
     formData.append("image", imageData)
     // const payload = {
     //   label: taskData.label,
@@ -586,7 +587,7 @@ const Project = () => {
                 <Select
                   options={projectMembers}
                   value={selectedMember}
-                  isMulti={false}
+                  // isMulti={true}
                   onChange={(e) => handleMemberChange(e)}
                   getOptionLabel={(e) => (
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>

@@ -12,12 +12,12 @@ import {
   CRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons'
+import { cilImage, cilLockLocked, cilUser } from '@coreui/icons'
 import { PostApiCall } from '../../../ApiCall'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faBriefcase } from '@fortawesome/free-solid-svg-icons';
 
 const Register = () => {
   const navigate = useNavigate()
@@ -26,12 +26,16 @@ const Register = () => {
     userName: "",
     email: "",
     password: "",
+    image: null,
+    role: ""
   });
   const [issignUpDisabled, setissignUpDisabled] = useState(false);
   const [signUpError, setsignUpError] = useState({
     userNameError: 0,
     emailEror: 0,
     passwordError: 0,
+    imageError: 0,
+    roleError: 0,
   });
   const handleSignUp = async () => {
     let valid = true;
@@ -56,15 +60,36 @@ const Register = () => {
       }));
       valid = false;
     }
+    if (forDatasignUp.image == null) {
+      setsignUpError((prev) => ({
+        ...prev,
+        imageError: 1,
+      }));
+      valid = false;
+    }
+    if (forDatasignUp.role == "") {
+      setsignUpError((prev) => ({
+        ...prev,
+        roleError: 1,
+      }));
+      valid = false;
+    }
     if (!valid) return 0;
     setissignUpDisabled(true);
-    const payload = {
-      username: forDatasignUp.userName,
-      email: forDatasignUp.email,
-      password: forDatasignUp.password,
-    };
+    const formData = new FormData()
+    // const payload = {
+    //   username: forDatasignUp.userName,
+    //   email: forDatasignUp.email,
+    //   password: forDatasignUp.password,
+    //   image: forDatasignUp.image
+    // };
+    formData.append("username", forDatasignUp.userName);
+    formData.append("email", forDatasignUp.email);
+    formData.append("password", forDatasignUp.password);
+    formData.append("image", forDatasignUp.image);
+    // };
     // try {
-    const data = await PostApiCall("signup/", payload);
+    const data = await PostApiCall("signup/", formData);
     console.log("log signupdate::", data);
     if (data.success == true) {
       navigate("/login");
@@ -75,19 +100,27 @@ const Register = () => {
       toast.error(data.msg);
     }
     // } catch (err) {
-    //   console.log("signup erro :", err);
     // } finally {
     //   setissignUpDisabled(false);
     // }
   };
+  console.log("forDatasignUp erro :", forDatasignUp);
   const handleSignUpChange = (e) => {
     console.log("handleSignUpChange e::", e.target);
-
     const { name, value } = e.target;
-    setforDatasignUp((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    if (name == "image") {
+      setforDatasignUp((prevData) => ({
+        ...prevData,
+        image: e.target.files[0],
+      }));
+    }
+    else {
+
+      setforDatasignUp((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
     if (name == "userName") {
       if (!value) {
         setsignUpError((pre) => ({
@@ -101,11 +134,37 @@ const Register = () => {
         }));
       }
     }
+    if (name == "role") {
+      if (!value) {
+        setsignUpError((pre) => ({
+          ...pre,
+          roleError: 1,
+        }));
+      } else {
+        setsignUpError((pre) => ({
+          ...pre,
+          userNameError: 0,
+        }));
+      }
+    }
     if (name == "email") {
       if (!value) {
         setsignUpError((pre) => ({
           ...pre,
           emailEror: 1,
+        }));
+      } else {
+        setsignUpError((pre) => ({
+          ...pre,
+          emailEror: 0,
+        }));
+      }
+    }
+    if (name == "image") {
+      if (!value) {
+        setsignUpError((pre) => ({
+          ...pre,
+          imageError: 1,
         }));
       } else {
         setsignUpError((pre) => ({
@@ -155,6 +214,15 @@ const Register = () => {
                   </CInputGroup>
                   <CInputGroup className="mb-3">
                     <CInputGroupText>
+                      <FontAwesomeIcon icon={faBriefcase} />
+                      {/* <CIcon icon={cilUser} /> */}
+                    </CInputGroupText>
+                    <CFormInput placeholder="your role like dev.." name="role" autoComplete="role" value={forDatasignUp.role}
+                      onChange={handleSignUpChange}
+                    />
+                  </CInputGroup>
+                  <CInputGroup className="mb-3">
+                    <CInputGroupText>
                       <CIcon icon={cilLockLocked} />
                     </CInputGroupText>
                     <CFormInput
@@ -165,10 +233,24 @@ const Register = () => {
                       value={forDatasignUp.password}
                       onChange={handleSignUpChange}
                     />
-                    <CInputGroupText style={{cursor:"pointer"}}>
+                    <CInputGroupText style={{ cursor: "pointer" }}>
 
                       <FontAwesomeIcon onClick={() => setisTypePassword(!isTypePassword)} icon={isTypePassword ? faEyeSlash : faEye} />
                     </CInputGroupText>
+                  </CInputGroup>
+                  <CInputGroup className="mb-3">
+                    <CInputGroupText>
+                      <CIcon icon={cilImage} />
+                    </CInputGroupText>
+                    <CFormInput
+                      type="file"
+                      name="image"
+                      placeholder="Profile image"
+                      // autoComplete="new-password"
+                      // value={forDatasignUp.image}
+                      onChange={handleSignUpChange}
+                    />
+
                   </CInputGroup>
 
                   <div className="d-grid">

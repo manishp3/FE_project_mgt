@@ -152,7 +152,8 @@ const AppHeaderDropdown = () => {
                     justifyContent: "center",
                     borderRadius: "50%",
                   }} src={selectedFile ? URL.createObjectURL(selectedFile) : `${import.meta.env.VITE_API_URL_USER}${authUser?.image}`} alt="Select profile image" />
-                  <FontAwesomeIcon icon={faCamera} onClick={() => document.getElementById("image-upload").click()} style={{
+                  <FontAwesomeIcon title="Change profile image" icon={faCamera} onClick={() => document.getElementById("image-upload").click()} style={{
+                    cursor: "pointer",
                     position: "absolute",
                     fontSize: "26px",
                     top: "151px",

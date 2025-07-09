@@ -44,10 +44,10 @@ const ProjectsPage = () => {
     // setMembers(data.data.user.map(user=>user.email))
     setMembers(data?.data?.user)
   }
-  useEffect(() => {
+  useEffect(async () => {
 
-    getProjectsDetails()
-    getMembersDetails()
+    await getProjectsDetails()
+    await getMembersDetails()
 
   }, [])
   console.log("all members otpon::", Members);
@@ -268,8 +268,8 @@ const ProjectsPage = () => {
               <p>Total Tasks: {project?.total_task}</p>
               <p> <span style={{ paddingRight: "10px" }}>Members:</span>
                 {
-                  project?.members.length > 0 && project.members.map((member) =>
-                    <img src={import.meta.env.VITE_API_URL_USER + member.icon} height="30px" width="30px" style={{ borderRadius: "50%", border: "1px solid gray", zIndex: project.members.length - index, position: "relative", marginLeft: index == 0 ? "-5px" : "-10px" }} title={member.label} />
+                  project?.members.length > 0 && project.members.map((member,index) =>
+                    <img src={import.meta.env.VITE_API_URL_USER + member.icon} key={index} height="30px" width="30px" style={{ borderRadius: "50%", border: "1px solid gray", zIndex: project.members.length - index, position: "relative", marginLeft: index == 0 ? "-5px" : "-10px" }} title={member.label} />
                   )}</p>
 
             </div>

@@ -21,8 +21,9 @@ import {
   CRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons'
-
+import { cilEyedropper, cilLockLocked, cilUser } from '@coreui/icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -444,6 +445,7 @@ const Login = () => {
       toast.success(response.msg);
     }
   };
+  const [isTypePassword, setisTypePassword] = useState(true)
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
@@ -466,13 +468,18 @@ const Login = () => {
                         <CIcon icon={cilLockLocked} />
                       </CInputGroupText>
                       <CFormInput
-                        type="password"
+                        type={isTypePassword ? "password" : "text"}
                         placeholder="Password"
                         autoComplete="current-password"
                         name="password"
                         value={forDatasignin.password}
                         onChange={handleSignInChange}
                       />
+                      <CInputGroupText style={{ cursor: "pointer" }}>
+
+                        <FontAwesomeIcon onClick={() => setisTypePassword(!isTypePassword)} icon={isTypePassword ? faEyeSlash : faEye} />
+                      </CInputGroupText>
+
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>

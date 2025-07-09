@@ -151,10 +151,15 @@ const Project = () => {
     // }
   }
   const handleMemberChange = (data) => {
-    console.log("handleMemberChange::", data);
-    const arrayData = [data]
-    console.log("handleMemberChange arrayData::", arrayData);
-    setselectedMember(data)
+    if (data) {
+      console.log("handleMemberChange::", data);
+      const arrayData = [data]
+      console.log("handleMemberChange arrayData::", arrayData);
+      setselectedMember(data)
+    }
+    else {
+      setselectedMember([])
+    }
   }
   const openCreateTaskModal = () => {
     console.log("im called");
@@ -187,7 +192,7 @@ const Project = () => {
     formData.append("priority", selectedPriority.value)
     formData.append("due_date", taskData.timeline)
     // formData.append("assign_to", selectedMember.value)
-    formData.append("assign_to", JSON.stringify(selectedMember))
+    formData.append("assign_to", selectedMember ? JSON.stringify(selectedMember) : [])
     formData.append("image", imageData)
     // const payload = {
     //   label: taskData.label,
@@ -587,7 +592,7 @@ const Project = () => {
                 <Select
                   options={projectMembers}
                   value={selectedMember}
-                  // isMulti={true}
+                  isClearable={true}
                   onChange={(e) => handleMemberChange(e)}
                   getOptionLabel={(e) => (
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>

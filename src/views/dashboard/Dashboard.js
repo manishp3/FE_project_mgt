@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import classNames from 'classnames'
 
 import {
@@ -53,6 +53,9 @@ import avatar6 from 'src/assets/images/avatars/6.jpg'
 import WidgetsBrand from '../widgets/WidgetsBrand'
 import WidgetsDropdown from '../widgets/WidgetsDropdown'
 import MainChart from './MainChart'
+import CommonGrid from '../../components/utils/CommonGrid'
+import { GetApiCall } from '../../ApiCall'
+import DashboardGrid from './DashboardGrid'
 
 const Dashboard = () => {
   const progressExample = [
@@ -176,10 +179,32 @@ const Dashboard = () => {
     },
   ]
 
+  const headers = ['Member', "Hours", "Tasks"]
+  const accessorKey = ['name', "total_spending_hour", "total_tasks"]
+  const [gridData, setgridData] = useState([])
+  console.log("grid data gridData ::", gridData);
+  useEffect(() => {
+    const GridDataApiCall = async () => {
+      const data = await GetApiCall("get_member_full_detail")
+      console.log("grid data member ::", data);
+      if (data?.data.success == true) {
+        setgridData(data?.data?.members)
+      }
+    }
+    GridDataApiCall()
+  }, [])
+
   return (
     <>
       <WidgetsDropdown className="mb-4" />
-      <CCard className="mb-4">
+      <div>
+        <DashboardGrid
+          headers={headers}
+          accessorKey={accessorKey}
+          data={gridData}
+        />
+      </div>
+      {/* <CCard className="mb-4">
         <CCardBody>
           <CRow>
             <CCol sm={5}>
@@ -232,9 +257,9 @@ const Dashboard = () => {
             ))}
           </CRow>
         </CCardFooter>
-      </CCard>
-      <WidgetsBrand className="mb-4" withCharts />
-      <CRow>
+      </CCard> */}
+      {/* <WidgetsBrand className="mb-4" withCharts /> */}
+      {/* <CRow>
         <CCol xs>
           <CCard className="mb-4">
             <CCardHeader>Traffic {' & '} Sales</CCardHeader>
@@ -379,7 +404,7 @@ const Dashboard = () => {
             </CCardBody>
           </CCard>
         </CCol>
-      </CRow>
+      </CRow> */}
     </>
   )
 }

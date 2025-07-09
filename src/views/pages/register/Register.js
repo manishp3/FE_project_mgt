@@ -16,9 +16,12 @@ import { cilLockLocked, cilUser } from '@coreui/icons'
 import { PostApiCall } from '../../../ApiCall'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const Register = () => {
   const navigate = useNavigate()
+  const [isTypePassword, setisTypePassword] = useState(true)
   const [forDatasignUp, setforDatasignUp] = useState({
     userName: "",
     email: "",
@@ -61,16 +64,16 @@ const Register = () => {
       password: forDatasignUp.password,
     };
     // try {
-      const data = await PostApiCall("signup/", payload);
-      console.log("log signupdate::", data);
-      if (data.success == true) {
-        navigate("/login");
-        toast.success(data.msg);
-        setissignUpDisabled(false);
-      }
-      else{
-        toast.error(data.msg);
-      }
+    const data = await PostApiCall("signup/", payload);
+    console.log("log signupdate::", data);
+    if (data.success == true) {
+      navigate("/login");
+      toast.success(data.msg);
+      setissignUpDisabled(false);
+    }
+    else {
+      toast.error(data.msg);
+    }
     // } catch (err) {
     //   console.log("signup erro :", err);
     // } finally {
@@ -155,25 +158,28 @@ const Register = () => {
                       <CIcon icon={cilLockLocked} />
                     </CInputGroupText>
                     <CFormInput
-                      type="password"
+                      type={isTypePassword ? "password" : "text"}
                       name="password"
                       placeholder="Password"
                       autoComplete="new-password"
                       value={forDatasignUp.password}
                       onChange={handleSignUpChange}
-
                     />
+                    <CInputGroupText style={{cursor:"pointer"}}>
+
+                      <FontAwesomeIcon onClick={() => setisTypePassword(!isTypePassword)} icon={isTypePassword ? faEyeSlash : faEye} />
+                    </CInputGroupText>
                   </CInputGroup>
 
                   <div className="d-grid">
                     <CButton color="success" onClick={handleSignUp}>Create Account</CButton>
                   </div>
                 </CForm>
-                  <div style={{display:"flex",justifyContent:"end"}}>
-                    <Link to='/login'>
+                <div style={{ display: "flex", justifyContent: "end" }}>
+                  <Link to='/login'>
                     return to Login?
-                    </Link>
-                  </div>
+                  </Link>
+                </div>
               </CCardBody>
             </CCard>
           </CCol>

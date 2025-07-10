@@ -44,10 +44,10 @@ const ProjectsPage = () => {
     // setMembers(data.data.user.map(user=>user.email))
     setMembers(data?.data?.user)
   }
-  useEffect(async () => {
+  useEffect(() => {
 
-    await getProjectsDetails()
-    await getMembersDetails()
+    getProjectsDetails()
+    getMembersDetails()
 
   }, [])
   console.log("all members otpon::", Members);
@@ -204,8 +204,6 @@ const ProjectsPage = () => {
   return (
     <>
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "16px" }}>
-
-
         <button onClick={openCreateProjectModal} style={{ border: "none" }} title='Create project'>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -227,61 +225,64 @@ const ProjectsPage = () => {
 
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
-        {AllProjects?.map((project, index) => (
-          <div
-            title="Go to Project"
-            key={index}
-            style={{
-              height: "150px",
-              width: "300px",
-              backgroundColor: "#fff", // soft hover color
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-              padding: "16px",
-              position: "relative",
-              transition: "all 0.3s ease-in-out",
-              cursor: "pointer",
-              display: "grid",
-              // gridTemplateRows:"2px",
-              gap: "10px"
-              // flexDirection: "row",
-              // justifyContent: "space-between",
-            }}
-          >
-            <div style={{ position: "absolute", top: "10px", right: "10px" }}>
-              {/* <CDropdown variant="nav-item"> */}
-              <CDropdown>
-                <CDropdownToggle className="py-0 pe-0 border-0 bg-transparent" caret={false}>
-                  <FontAwesomeIcon icon={faEllipsis} />
-                </CDropdownToggle>
-                <CDropdownMenu className="pt-0" placement="bottom-end">
-                  <CDropdownItem onClick={() => handleOpenEditModal(project._id)}>edit</CDropdownItem>
-                  <CDropdownItem onClick={() => handleOpenDeleteModal(project._id)}>Delete</CDropdownItem>
-                  <CDropdownItem onClick={() => handleProjectStar(project)}>{project.is_star == 1 ? "Unstar Project" : "Star Project"}</CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
-            </div>
-            <div onClick={() => navigate("project", { state: { project_id: project._id } })}>
-              <p style={{ margin: 0, fontWeight: 500 }}>Project Name :{project?.project_name.length > 10 ? project?.project_name.slice(0, 17) : project?.project_name}</p>
-              <p>Total Tasks: {project?.total_task}</p>
-              <p> <span style={{ paddingRight: "10px" }}>Members:</span>
-                {
-                  project?.members.length > 0 && project.members.map((member,index) =>
-                    <img src={import.meta.env.VITE_API_URL_USER + member.icon} key={index} height="30px" width="30px" style={{ borderRadius: "50%", border: "1px solid gray", zIndex: project.members.length - index, position: "relative", marginLeft: index == 0 ? "-5px" : "-10px" }} title={member.label} />
-                  )}</p>
+      {AllProjects.length < 1 ?
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}> <p style={{ color: "red" }}>No Project Found !</p></div>
+        :
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
+          {AllProjects?.map((project, index) => (
+            <div
+              title="Go to Project"
+              key={index}
+              style={{
+                height: "150px",
+                width: "300px",
+                backgroundColor: "#fff", // soft hover color
+                border: "1px solid #ccc",
+                borderRadius: "8px",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                padding: "16px",
+                position: "relative",
+                transition: "all 0.3s ease-in-out",
+                cursor: "pointer",
+                display: "grid",
+                // gridTemplateRows:"2px",
+                gap: "10px"
+                // flexDirection: "row",
+                // justifyContent: "space-between",
+              }}
+            >
+              <div style={{ position: "absolute", top: "10px", right: "10px" }}>
+                {/* <CDropdown variant="nav-item"> */}
+                <CDropdown>
+                  <CDropdownToggle className="py-0 pe-0 border-0 bg-transparent" caret={false}>
+                    <FontAwesomeIcon icon={faEllipsis} />
+                  </CDropdownToggle>
+                  <CDropdownMenu className="pt-0" placement="bottom-end">
+                    <CDropdownItem onClick={() => handleOpenEditModal(project._id)}>edit</CDropdownItem>
+                    <CDropdownItem onClick={() => handleOpenDeleteModal(project._id)}>Delete</CDropdownItem>
+                    <CDropdownItem onClick={() => handleProjectStar(project)}>{project.is_star == 1 ? "Unstar Project" : "Star Project"}</CDropdownItem>
+                  </CDropdownMenu>
+                </CDropdown>
+              </div>
+              <div onClick={() => navigate("project", { state: { project_id: project._id } })}>
+                <p style={{ margin: 0, fontWeight: 500 }}>Project Name :{project?.project_name.length > 10 ? project?.project_name.slice(0, 17) : project?.project_name}</p>
+                <p>Total Tasks: {project?.total_task}</p>
+                <p> <span style={{ paddingRight: "10px" }}>Members:</span>
+                  {
+                    project?.members.length > 0 && project.members.map((member, index) =>
+                      <img src={import.meta.env.VITE_API_URL_USER + member.icon} key={index} height="30px" width="30px" style={{ borderRadius: "50%", border: "1px solid gray", zIndex: project.members.length - index, position: "relative", marginLeft: index == 0 ? "-5px" : "-10px" }} title={member.label} />
+                    )}</p>
 
-            </div>
+              </div>
 
-            <div style={{ position: "absolute", bottom: "10px", right: "10px" }}>
-              <FontAwesomeIcon icon={faFolderOpen} size="2x" color="#f0ad4e" />
+              <div style={{ position: "absolute", bottom: "10px", right: "10px" }}>
+                <FontAwesomeIcon icon={faFolderOpen} size="2x" color="#f0ad4e" />
+              </div>
             </div>
-          </div>
-        ))
-        }
-      </div>
-
+          ))
+          }
+        </div>
+      }
       <Modal isOpen={isCreateProjectModalOpen} toggle={createModalToggle}>
         <ModalHeader toggle={createModalToggle}>
           {isEdit == 1 ? "Edit Project" : "Create Project"}

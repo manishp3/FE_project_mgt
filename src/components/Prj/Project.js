@@ -36,6 +36,13 @@ const Project = () => {
     attachement: null,
     // assign_to: "",
   })
+  const [errors, setErrors] = useState({
+    label: '',
+    status: '',
+    priority: '',
+    timeline: ''
+  });
+
   const [imageData, setimageData] = useState(null)
   const [refresData, setrefresData] = useState(0)
   const projectStatus = [
@@ -76,13 +83,6 @@ const Project = () => {
       setmainDate(updatedData);
     }
   }, [projectTasks]);
-
-
-  // useEffect(() => {
-  //   if(projectMembers && projectMembers.length>0){
-  //     const updatedMembers=
-  //   }
-  // }, [projectMembers])
 
   console.log("location data::", location);
   // console.log("location data::1", location?.state?.project_id);
@@ -134,16 +134,25 @@ const Project = () => {
         [name]: e.target.files[0]
       }))
     }
-    // if (name == "timeline") {
-    //   let date = new Date().toISOString().split("T")[0]
-    //   if (value < date) {
-    //     settaskData((pre) => ({
-    //       ...pre,
-    //       timeline: null,
-    //     }))
-    //     return 0;
-    //   }
-    // }
+    if (name == "timeline") {
+      console.log("log im called on time libne");
+      
+      let date = new Date().toISOString().split("T")[0]
+      if (value < date) {
+        settaskData((pre) => ({
+          ...pre,
+          timeline: null,
+        }))
+        newErrors.timeline = 'Timeline is wrong!';
+        return 0;
+      }
+      else {
+        settaskData((pre) => ({
+          ...pre,
+          [name]: value,
+        }))
+      }
+    }
     settaskData((pre) => ({
       ...pre,
       [name]: value
@@ -175,16 +184,57 @@ const Project = () => {
       timeline: null,
       attachement: null,
     })
+    setErrors({
+      label: '',
+      status: '',
+      priority: '',
+      timeline: ''
+    });
     setselectedMember([])
     setselectedPriority([])
   }
-  console.log("taskData::", selectedMember);
+  console.log("taskData::", taskData);
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = {
+      label: '',
+      status: '',
+      priority: '',
+      timeline: ''
+    };
+
+    if (!taskData.label.trim()) {
+      newErrors.label = 'Task name is required';
+      valid = false;
+    }
+
+    if (!selectedStatus || !selectedStatus.value) {
+      newErrors.status = 'Status is required';
+      valid = false;
+    }
+
+    if (!selectedPriority || !selectedPriority.value) {
+      newErrors.priority = 'Priority is required';
+      valid = false;
+    }
+
+    if (!taskData.timeline) {
+      newErrors.timeline = 'Timeline is required';
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  }
 
   const [isSUbmitClick, setisSUbmitClick] = useState(false)
   const handleCreateTask = async () => {
     console.log("submited members", selectedMember);
 
     setisSUbmitClick(true)
+    if (!validateForm()) {
+      return;
+    }
     const formData = new FormData()
     formData.append("label", taskData.label)
     formData.append("summary", taskData.summary)
@@ -231,6 +281,12 @@ const Project = () => {
       setselectedPriority([])
       setselectedMember([])
       setisOpenTaskModal(false)
+      setErrors({
+        label: '',
+        status: '',
+        priority: '',
+        timeline: ''
+      });
       getProjectTask()
     }
     else {
@@ -286,7 +342,7 @@ const Project = () => {
       const data = tResponse.data.task;
 
       // Find the member object that matches the assign_to ID
-      const assignedMember = projectMembers.find(prj => prj.value === data.assign_to);
+      const assignedMember = projectMembers.find(prj => prj.value === data?.assign_to);
       console.log("get members from db::", assignedMember);
 
       settaskData({
@@ -574,8 +630,9 @@ const Project = () => {
           <Row>
             <Col>
               <div className="mb-3">
-                <label className="form-label">Task Name</label>
-                <input type="text" name="label" value={taskData.label} className="form-control" placeholder="Enter task name" onChange={(e) => handleTaskChange(e)} />
+                <label className="form-label isStar">Task Name</label>
+                <input type="text" name="label" value={taskData.label} className={`form-control ${errors.label ? 'is-invalid' : ''}`} placeholder="Enter task name" onChange={(e) => handleTaskChange(e)} />
+                {errors.label && <div className="invalid-feedback">{errors.label}</div>}
               </div>
             </Col>
             <Col>
@@ -605,11 +662,12 @@ const Project = () => {
             </Col>
             <Col>
               <div className='mb-3'>
-                <label className='form-label'>Priority</label>
+                <label className='form-label isStar'>Priority</label>
                 <Select
                   options={taskPriority}
                   value={selectedPriority}
                   isMulti={false}
+                  className={`${errors.priority ? 'is-invalid' : ''}`}
                   onChange={(e) => handlePriorityChange(e)}
                   getOptionLabel={(e) => (
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -618,6 +676,7 @@ const Project = () => {
                     </div>
                   )}
                 />
+                {errors.priority && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.priority}</div>}
               </div>
 
             </Col>
@@ -626,19 +685,22 @@ const Project = () => {
           <Row>
             <Col>
               <div className="mb-3">
-                <label className="form-label">Timeline</label>
-                <input type="date" name="timeline" className="form-control" onChange={(e) => handleTaskChange(e)} value={taskData.timeline} min={new Date().toISOString().split('T')[0]} />
+                <label className="form-label isStar">Timeline</label>
+                <input type="date" name="timeline" className={`form-control ${errors.timeline ? 'is-invalid' : ''}`} onChange={(e) => handleTaskChange(e)} value={taskData.timeline} min={new Date().toISOString().split('T')[0]} />
+                {errors.timeline && <div className="invalid-feedback">{errors.timeline}</div>}
               </div>
             </Col>
             <Col>
               <div>
-                <label className='form-label'>Status</label>
+                <label className='form-label isStar'>Status</label>
                 <Select
                   options={projectStatus}
                   value={selectedStatus}
                   isMulti={false}
+                  className={`${errors.status ? 'is-invalid' : ''}`}
                   onChange={(e) => handleStatusChange(e)}
                 />
+                {errors.status && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.status}</div>}
               </div>
             </Col>
           </Row>

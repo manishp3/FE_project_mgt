@@ -79,8 +79,9 @@ export const convertInputedToMainFormat = (time) => {
     if (days > 0) formattedTime += `${days}d `;
     if (hours > 0) formattedTime += `${hours}h `;
     if (minutes > 0) formattedTime += `${minutes}m`;
-    console.log("im called on step 9");
-    return { formatted: Number(formattedTime), isValid: true, totalHour: Number(dishour) }
+    console.log("im called on step 9",formattedTime);
+    // return { formatted: Number(formattedTime), isValid: true, totalHour: Number(dishour) }
+    return { formatted: formattedTime, isValid: true, totalHour: Number(dishour) }
 }
 
 

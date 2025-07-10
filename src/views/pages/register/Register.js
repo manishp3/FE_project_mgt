@@ -198,7 +198,7 @@ const Register = () => {
                 <CForm>
                   <h1>Register</h1>
                   <p className="text-body-secondary">Create your account</p>
-                  <CInputGroup className="mb-3">
+                  <CInputGroup className="mb-3 isStar">
                     <CInputGroupText>
                       <CIcon icon={cilUser} />
                     </CInputGroupText>
@@ -206,13 +206,13 @@ const Register = () => {
                       onChange={handleSignUpChange}
                     />
                   </CInputGroup>
-                  <CInputGroup className="mb-3">
-                    <CInputGroupText>@</CInputGroupText>
+                  <CInputGroup className="mb-3 isStar">
+                    <CInputGroupText >@</CInputGroupText>
                     <CFormInput placeholder="Email" name="email" autoComplete="email" value={forDatasignUp.email}
                       onChange={handleSignUpChange}
                     />
                   </CInputGroup>
-                  <CInputGroup className="mb-3">
+                  <CInputGroup className="mb-3 isStar">
                     <CInputGroupText>
                       <FontAwesomeIcon icon={faBriefcase} />
                       {/* <CIcon icon={cilUser} /> */}
@@ -221,7 +221,7 @@ const Register = () => {
                       onChange={handleSignUpChange}
                     />
                   </CInputGroup>
-                  <CInputGroup className="mb-3">
+                  <CInputGroup className="mb-3 isStar">
                     <CInputGroupText>
                       <CIcon icon={cilLockLocked} />
                     </CInputGroupText>
@@ -238,7 +238,7 @@ const Register = () => {
                       <FontAwesomeIcon onClick={() => setisTypePassword(!isTypePassword)} icon={isTypePassword ? faEyeSlash : faEye} />
                     </CInputGroupText>
                   </CInputGroup>
-                  <CInputGroup className="mb-3">
+                  <CInputGroup className="mb-3 isStar">
                     <CInputGroupText>
                       <CIcon icon={cilImage} />
                     </CInputGroupText>

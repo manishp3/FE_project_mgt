@@ -35,8 +35,8 @@ const DashboardGrid = ({ headers, accessorKey, data, allowDelete, allowEdit,
                   justifyContent: "center",
                   flexDirection: "column",
                 }}>
-                  <p>{row.original?.name}</p>
-                  <p>{"dummy role"}</p>
+                  <p className='fw-bold'>{row.original?.name}</p>
+                  <p className='text-muted'>{row.original?.role || "dummy role"}</p>
                 </div>
               </div>
               // </span>

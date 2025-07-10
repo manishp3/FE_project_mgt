@@ -457,13 +457,13 @@ const Login = () => {
                   <CForm>
                     <h1>Login</h1>
                     <p className="text-body-secondary">Sign In to your account</p>
-                    <CInputGroup className="mb-3">
+                    <CInputGroup className="mb-3 isStar">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
                       <CFormInput placeholder="Email" autoComplete="Email" name="email" value={forDatasignin.email} onChange={handleSignInChange} />
                     </CInputGroup>
-                    <CInputGroup className="mb-4">
+                    <CInputGroup className="mb-4 isStar">
                       <CInputGroupText>
                         <CIcon icon={cilLockLocked} />
                       </CInputGroupText>

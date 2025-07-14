@@ -16,6 +16,7 @@ import CIcon from '@coreui/icons-react'
 import { cilArrowBottom, cilArrowTop, cilOptions } from '@coreui/icons'
 import { Col } from 'react-bootstrap'
 import { GetApiCall } from '../../ApiCall'
+import CountUp from 'react-countup'
 
 const WidgetsDropdown = (props) => {
   const widgetChartRef1 = useRef(null)
@@ -143,7 +144,9 @@ const WidgetsDropdown = (props) => {
               Total Projects
             </p>
             <p className="fw-bold" style={{ fontSize: "24px", margin: 0 }}>
-              {dashboardData?.total_projects + "/"}<span style={{ fontSize: "16px" }} className='text-muted'>{dashboardData?.total_hours + "h"}</span>
+
+
+              <CountUp start={0} delay={1} end={dashboardData?.total_projects || 0} />/<span style={{ fontSize: "16px" }} className='text-muted'><CountUp start={0} delay={1} end={dashboardData?.total_hours || 0} /> h</span>
             </p>
           </div>
         </div>
@@ -181,7 +184,8 @@ const WidgetsDropdown = (props) => {
               Total Task
             </p>
             <p className="fw-bold" style={{ fontSize: "24px", margin: 0 }}>
-              {dashboardData?.tasks}
+              {/* {dashboardData?.tasks} */}
+              <CountUp start={0} delay={1} end={dashboardData?.tasks || 0} />
               {/* <span style={{ fontSize: "16px" }} className='text-muted'>{dashboardData.total_hours + "h"}</span> */}
             </p>
           </div>
@@ -219,7 +223,9 @@ const WidgetsDropdown = (props) => {
               Todos
             </p>
             <p className="fw-bold" style={{ fontSize: "24px", margin: 0 }}>
-              {dashboardData?.todo_task?.task + "/"}<span style={{ fontSize: "16px" }} className='text-muted'>{dashboardData?.todo_task?.hours + "h"}</span>
+
+              <CountUp start={0} delay={1} end={dashboardData?.todo_task?.task || 0} />
+              /<span style={{ fontSize: "16px" }} className='text-muted'><CountUp start={0} delay={1} end={dashboardData?.todo_task?.hours || 0} />h</span>
             </p>
           </div>
         </div>
@@ -256,7 +262,9 @@ const WidgetsDropdown = (props) => {
               InProgress
             </p>
             <p className="fw-bold" style={{ fontSize: "24px", margin: 0 }}>
-              {dashboardData?.inprogress_task?.task + "/"}<span style={{ fontSize: "16px" }} className='text-muted'>{dashboardData?.inprogress_task?.hours + "h"}</span>
+              <CountUp start={0} delay={2} end={dashboardData?.inprogress_task?.task || 0} />
+              /<span style={{ fontSize: "16px" }} className='text-muted'>
+                <CountUp start={0} delay={2} end={dashboardData?.inprogress_task?.hours || 0} />h</span>
             </p>
           </div>
         </div>
@@ -293,7 +301,8 @@ const WidgetsDropdown = (props) => {
               Completed
             </p>
             <p className="fw-bold" style={{ fontSize: "24px", margin: 0 }}>
-              {dashboardData?.done_task?.task + "/"}<span style={{ fontSize: "16px" }} className='text-muted'>{dashboardData?.done_task?.hours + "h"}</span>
+              <CountUp start={0} delay={1} end={dashboardData?.done_task?.task||0} />
+              /<span style={{ fontSize: "16px" }} className='text-muted'><CountUp start={0} delay={1} end={dashboardData?.done_task?.hours||0}/>h</span>
             </p>
           </div>
         </div>

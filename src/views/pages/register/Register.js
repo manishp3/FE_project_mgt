@@ -31,50 +31,67 @@ const Register = () => {
   });
   const [issignUpDisabled, setissignUpDisabled] = useState(false);
   const [signUpError, setsignUpError] = useState({
-    userNameError: 0,
-    emailEror: 0,
-    passwordError: 0,
-    imageError: 0,
-    roleError: 0,
+    userNameError: "",
+    emailEror: "",
+    passwordError: "",
+    imageError: "",
+    roleError: "",
   });
-  const handleSignUp = async () => {
+  console.log("vaidation for data checkout::1", forDatasignUp);
+  console.log("vaidation for data checkout::2", signUpError);
+
+  const validateForm = () => {
     let valid = true;
+    console.log("vaidation for data checkout:: start");
+
     if (forDatasignUp.userName == "") {
+      console.log("vaidation for data checkout:: 3");
+
       setsignUpError((prev) => ({
         ...prev,
-        userNameError: 1,
+        userNameError: "Please Enter username",
       }));
       valid = false;
     }
     if (forDatasignUp.email == "") {
       setsignUpError((prev) => ({
         ...prev,
-        emailEror: 1,
+        emailEror: "Please enter email",
       }));
       valid = false;
     }
     if (forDatasignUp.password == "") {
       setsignUpError((prev) => ({
         ...prev,
-        passwordError: 1,
+        passwordError: "Please enter password",
       }));
       valid = false;
     }
     if (forDatasignUp.image == null) {
       setsignUpError((prev) => ({
         ...prev,
-        imageError: 1,
+        imageError: "Please select profile image",
       }));
       valid = false;
     }
     if (forDatasignUp.role == "") {
       setsignUpError((prev) => ({
         ...prev,
-        roleError: 1,
+        roleError: "Please enter your position",
       }));
       valid = false;
     }
-    if (!valid) return 0;
+    if (!valid) { return false; }
+    else {
+      return true;
+    }
+  }
+  const handleSignUp = async () => {
+    const isvalid = validateForm()
+    console.log("vaidation for data checkout:: handleSignUp", isvalid);
+
+    if (!isvalid) { return 0; }
+
     setissignUpDisabled(true);
     const formData = new FormData()
     // const payload = {
@@ -87,6 +104,7 @@ const Register = () => {
     formData.append("email", forDatasignUp.email);
     formData.append("password", forDatasignUp.password);
     formData.append("image", forDatasignUp.image);
+    formData.append("role", forDatasignUp.role);
     // };
     // try {
     const data = await PostApiCall("signup/", formData);
@@ -125,12 +143,12 @@ const Register = () => {
       if (!value) {
         setsignUpError((pre) => ({
           ...pre,
-          userNameError: 1,
+          userNameError: "Please Enter username",
         }));
       } else {
         setsignUpError((pre) => ({
           ...pre,
-          userNameError: 0,
+          userNameError: "",
         }));
       }
     }
@@ -138,12 +156,12 @@ const Register = () => {
       if (!value) {
         setsignUpError((pre) => ({
           ...pre,
-          roleError: 1,
+          roleError: "Please enter your position",
         }));
       } else {
         setsignUpError((pre) => ({
           ...pre,
-          userNameError: 0,
+          roleError: "",
         }));
       }
     }
@@ -151,12 +169,12 @@ const Register = () => {
       if (!value) {
         setsignUpError((pre) => ({
           ...pre,
-          emailEror: 1,
+          emailEror: "Please enter email",
         }));
       } else {
         setsignUpError((pre) => ({
           ...pre,
-          emailEror: 0,
+          emailEror: "",
         }));
       }
     }
@@ -164,12 +182,12 @@ const Register = () => {
       if (!value) {
         setsignUpError((pre) => ({
           ...pre,
-          imageError: 1,
+          imageError: "Please Enter image",
         }));
       } else {
         setsignUpError((pre) => ({
           ...pre,
-          emailEror: 0,
+          imageError: "",
         }));
       }
     }
@@ -177,12 +195,12 @@ const Register = () => {
       if (!value) {
         setsignUpError((pre) => ({
           ...pre,
-          passwordError: 1,
+          passwordError: "Please enter password",
         }));
       } else {
         setsignUpError((pre) => ({
           ...pre,
-          passwordError: 0,
+          passwordError: "",
         }));
       }
     }
@@ -198,36 +216,40 @@ const Register = () => {
                 <CForm>
                   <h1>Register</h1>
                   <p className="text-body-secondary">Create your account</p>
-                  <CInputGroup className="mb-3 isStar">
+                  <CInputGroup className={`mb-3 ${!signUpError.userNameError && "isStar"}`}>
                     <CInputGroupText>
                       <CIcon icon={cilUser} />
                     </CInputGroupText>
-                    <CFormInput name="userName" placeholder="Username" autoComplete="username" value={forDatasignUp.userName}
+                    <CFormInput name="userName" className={`${signUpError.userNameError && "is-invalid"}`} placeholder="Username" autoComplete="username" value={forDatasignUp.userName}
                       onChange={handleSignUpChange}
                     />
+                    {signUpError.userNameError && <div className="invalid-feedback" style={{ display: 'block' }}>{signUpError.userNameError}</div>}
                   </CInputGroup>
-                  <CInputGroup className="mb-3 isStar">
+                  <CInputGroup className={`mb-3 ${!signUpError.emailEror && "isStar"}`}>
                     <CInputGroupText >@</CInputGroupText>
-                    <CFormInput placeholder="Email" name="email" autoComplete="email" value={forDatasignUp.email}
+                    <CFormInput placeholder="Email" name="email" autoComplete="email" className={`${signUpError.emailEror && "is-invalid"}`} value={forDatasignUp.email}
                       onChange={handleSignUpChange}
                     />
+                    {signUpError.emailEror && <div className="invalid-feedback" style={{ display: 'block' }}>{signUpError.emailEror}</div>}
                   </CInputGroup>
-                  <CInputGroup className="mb-3 isStar">
+                  <CInputGroup className={`mb-3 ${!signUpError.roleError && "isStar"}`}>
                     <CInputGroupText>
                       <FontAwesomeIcon icon={faBriefcase} />
                       {/* <CIcon icon={cilUser} /> */}
                     </CInputGroupText>
-                    <CFormInput placeholder="your role like dev.." name="role" autoComplete="role" value={forDatasignUp.role}
+                    <CFormInput placeholder="your role like dev.." className={`${signUpError.roleError && "is-invalid"}`} name="role" autoComplete="role" value={forDatasignUp.role}
                       onChange={handleSignUpChange}
                     />
+                    {signUpError.roleError && <div className="invalid-feedback" style={{ display: 'block' }}>{signUpError.roleError}</div>}
                   </CInputGroup>
-                  <CInputGroup className="mb-3 isStar">
+                  <CInputGroup className={`mb-3 ${!signUpError.passwordError && "isStar"}`}>
                     <CInputGroupText>
                       <CIcon icon={cilLockLocked} />
                     </CInputGroupText>
                     <CFormInput
                       type={isTypePassword ? "password" : "text"}
                       name="password"
+                      className={`${signUpError.passwordError && "is-invalid"}`}
                       placeholder="Password"
                       autoComplete="new-password"
                       value={forDatasignUp.password}
@@ -237,20 +259,22 @@ const Register = () => {
 
                       <FontAwesomeIcon onClick={() => setisTypePassword(!isTypePassword)} icon={isTypePassword ? faEyeSlash : faEye} />
                     </CInputGroupText>
+                    {signUpError.passwordError && <div className="invalid-feedback" style={{ display: 'block' }}>{signUpError.passwordError}</div>}
                   </CInputGroup>
-                  <CInputGroup className="mb-3 isStar">
+                  <CInputGroup className={`mb-3 ${!signUpError.imageError && "isStar"}`}>
                     <CInputGroupText>
                       <CIcon icon={cilImage} />
                     </CInputGroupText>
                     <CFormInput
                       type="file"
                       name="image"
+                      className={`${signUpError.imageError && "is-invalid"}`}
                       placeholder="Profile image"
                       // autoComplete="new-password"
                       // value={forDatasignUp.image}
                       onChange={handleSignUpChange}
                     />
-
+                    {signUpError.imageError && <div className="invalid-feedback" style={{ display: 'block' }}>{signUpError.imageError}</div>}
                   </CInputGroup>
 
                   <div className="d-grid">

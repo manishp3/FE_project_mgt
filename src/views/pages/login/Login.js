@@ -27,166 +27,20 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [tab, setTab] = useState("signin");
-  const [showForgot, setShowForgot] = useState(false);
-  const [issignInDisabled, setissignInDisabled] = useState(false);
-  const [issignUpDisabled, setissignUpDisabled] = useState(false);
-  const [signInError, setsignInError] = useState({
-    emailEror: 0,
-    passwordError: 0,
-  });
-  const [signUpError, setsignUpError] = useState({
-    userNameError: 0,
-    emailEror: 0,
-    passwordError: 0,
-  });
-  console.log("signInError::", signInError);
 
-  const [forDatasignUp, setforDatasignUp] = useState({
-    userName: "",
-    email: "",
-    password: "",
+  // const [showForgot, setShowForgot] = useState(false);
+  const [issignInDisabled, setissignInDisabled] = useState(false);
+
+  const [signInError, setsignInError] = useState({
+    emailEror: "",
+    passwordError: "",
   });
+
   const [forDatasignin, setforDatasignIn] = useState({
     email: "",
     password: "",
   });
-  const handleSignUpChange = (e) => {
-    console.log("handleSignUpChange e::", e.target);
 
-    const { name, value } = e.target;
-    setforDatasignUp((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-    if (name == "userName") {
-      if (!value) {
-        setsignUpError((pre) => ({
-          ...pre,
-          userNameError: 1,
-        }));
-      } else {
-        setsignUpError((pre) => ({
-          ...pre,
-          userNameError: 0,
-        }));
-      }
-    }
-    if (name == "email") {
-      if (!value) {
-        setsignUpError((pre) => ({
-          ...pre,
-          emailEror: 1,
-        }));
-      } else {
-        setsignUpError((pre) => ({
-          ...pre,
-          emailEror: 0,
-        }));
-      }
-    }
-    if (name == "password") {
-      if (!value) {
-        setsignUpError((pre) => ({
-          ...pre,
-          passwordError: 1,
-        }));
-      } else {
-        setsignUpError((pre) => ({
-          ...pre,
-          passwordError: 0,
-        }));
-      }
-    }
-  };
-  const handleSignUpBlur = (e) => {
-    const { name, value, validity } = e.target;
-    if (name == "userName") {
-      if (!value) {
-        setsignUpError((pre) => ({
-          ...pre,
-          userNameError: 1,
-        }));
-      } else {
-        setsignUpError((pre) => ({
-          ...pre,
-          userNameError: 0,
-        }));
-      }
-    }
-    if (name == "email") {
-      // if(){
-
-      // }
-      if (validity.valid == 0 || !value) {
-        setsignUpError((pre) => ({
-          ...pre,
-          emailEror: 1,
-        }));
-      } else {
-        setsignUpError((pre) => ({
-          ...pre,
-          emailEror: 0,
-        }));
-      }
-    }
-    if (name == "password") {
-      if (!value) {
-        setsignUpError((pre) => ({
-          ...pre,
-          passwordError: 1,
-        }));
-      } else {
-        setsignUpError((pre) => ({
-          ...pre,
-          passwordError: 0,
-        }));
-      }
-    }
-  };
-  const handleSignUp = async () => {
-    let valid = true;
-    if (forDatasignUp.userName == "") {
-      setsignUpError((prev) => ({
-        ...prev,
-        userNameError: 1,
-      }));
-      valid = false;
-    }
-    if (forDatasignUp.email == "") {
-      setsignUpError((prev) => ({
-        ...prev,
-        emailEror: 1,
-      }));
-      valid = false;
-    }
-    if (forDatasignUp.password == "") {
-      setsignUpError((prev) => ({
-        ...prev,
-        passwordError: 1,
-      }));
-      valid = false;
-    }
-    if (!valid) return 0;
-    setissignUpDisabled(true);
-    const payload = {
-      username: forDatasignUp.userName,
-      email: forDatasignUp.email,
-      password: forDatasignUp.password,
-    };
-    try {
-      const data = await PostApiCall("signup/", payload);
-      console.log("log signupdate::", data);
-      if (data.success == true) {
-        toast.success("success signup");
-        setissignUpDisabled(false);
-      }
-    } catch (err) {
-      console.log("signup erro :", err);
-    } finally {
-      setissignUpDisabled(false);
-    }
-  };
 
   const handleSignInChange = (e) => {
     console.log("handleSignInChange e::", e.target);
@@ -200,12 +54,12 @@ const Login = () => {
       if (!value) {
         setsignInError((prev) => ({
           ...prev,
-          emailEror: 1,
+          emailEror: "Please Enter register Email",
         }));
       } else {
         setsignInError((prev) => ({
           ...prev,
-          emailEror: 0,
+          emailEror: "",
         }));
       }
     }
@@ -213,12 +67,12 @@ const Login = () => {
       if (!value) {
         setsignInError((prev) => ({
           ...prev,
-          passwordError: 1,
+          passwordError: "Please Enter Password",
         }));
       } else {
         setsignInError((prev) => ({
           ...prev,
-          passwordError: 0,
+          passwordError: "",
         }));
       }
     }
@@ -263,14 +117,14 @@ const Login = () => {
     if (forDatasignin.email == "") {
       setsignInError((prev) => ({
         ...prev,
-        emailEror: 1,
+        emailEror: "Please Enter Email",
       }));
       valid = false;
     }
     if (forDatasignin.password == "") {
       setsignInError((prev) => ({
         ...prev,
-        passwordError: 1,
+        passwordError: "Please Enter Password",
       }));
       valid = false;
     }
@@ -440,7 +294,7 @@ const Login = () => {
     if (response.success == true) {
       console.log("forgot respomse ::1", response.msg);
 
-      setShowForgot(false);
+      // setShowForgot(false);
       setisOpenChangePasswordModal(false);
       toast.success(response.msg);
     }
@@ -457,19 +311,21 @@ const Login = () => {
                   <CForm>
                     <h1>Login</h1>
                     <p className="text-body-secondary">Sign In to your account</p>
-                    <CInputGroup className="mb-3 isStar">
+                    <CInputGroup className={`mb-3 ${!signInError.emailEror && "isStar"}`}>
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
-                      <CFormInput placeholder="Email" autoComplete="Email" name="email" value={forDatasignin.email} onChange={handleSignInChange} />
+                      <CFormInput placeholder="Email" autoComplete="Email" className={`${signInError.emailEror && "is-invalid"}`} name="email" value={forDatasignin.email} onChange={handleSignInChange} />
+                      {signInError.emailEror && <div className="invalid-feedback" style={{ display: 'block' }}>{signInError.emailEror}</div>}
                     </CInputGroup>
-                    <CInputGroup className="mb-4 isStar">
+                    <CInputGroup className={`mb-3 ${!signInError.passwordError && "isStar"}`}>
                       <CInputGroupText>
                         <CIcon icon={cilLockLocked} />
                       </CInputGroupText>
                       <CFormInput
                         type={isTypePassword ? "password" : "text"}
                         placeholder="Password"
+                        className={`${signInError.passwordError && "is-invalid"}`}
                         autoComplete="current-password"
                         name="password"
                         value={forDatasignin.password}
@@ -480,6 +336,7 @@ const Login = () => {
                         <FontAwesomeIcon onClick={() => setisTypePassword(!isTypePassword)} icon={isTypePassword ? faEyeSlash : faEye} />
                       </CInputGroupText>
 
+                      {signInError.passwordError && <div className="invalid-feedback" style={{ display: 'block' }}>{signInError.passwordError}</div>}
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>

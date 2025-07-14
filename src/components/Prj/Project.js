@@ -43,6 +43,8 @@ const Project = () => {
     timeline: ''
   });
 
+  console.log("create task  error ::", errors);
+
   const [imageData, setimageData] = useState(null)
   const [refresData, setrefresData] = useState(0)
   const projectStatus = [
@@ -116,47 +118,80 @@ const Project = () => {
     }
   }
   useEffect(() => {
-    getProjectTask()
+    getProjectTask();
   }, [location])
 
-
   console.log("projectTasks::", projectTasks);
-
-
 
   const handleTaskChange = (e) => {
     const { name, value } = e.target;
     console.log("log of e ::", e.target);
 
     if (name == "attachement") {
+
       settaskData((pre) => ({
         ...pre,
         [name]: e.target.files[0]
       }))
     }
+    else {
+      settaskData((pre) => ({
+        ...pre,
+        [name]: value,
+      }))
+    }
     if (name == "timeline") {
       console.log("log im called on time libne");
-      
-      let date = new Date().toISOString().split("T")[0]
-      if (value < date) {
-        settaskData((pre) => ({
+      if (!value) {
+        console.log("log im called on time libne empty");
+        setErrors((pre) => ({
           ...pre,
-          timeline: null,
+            timeline: "Please enter date",
+          }))
+          // errors.timeline = 'Enter date !';
+        }
+        else {
+        console.log("log im called on time libne not empty");
+        // let date = new Date().toISOString().split("T")[0]
+        // if (value < date) {
+        //   settaskData((pre) => ({
+        //     ...pre,
+        //     timeline: null,
+        //   }))
+        //   settaskData((pre) => ({
+        //     ...pre,
+        //     timeline: "Wrong date",
+        //   }))
+        //   return 0;
+        // }
+        // else {
+        setErrors((pre) => ({
+          ...pre,
+          timeline: "",
         }))
-        newErrors.timeline = 'Timeline is wrong!';
-        return 0;
-      }
-      else {
         settaskData((pre) => ({
           ...pre,
           [name]: value,
         }))
+        // }
       }
     }
-    settaskData((pre) => ({
-      ...pre,
-      [name]: value
-    }))
+    if (name == "label") {
+      if (!value) {
+        setErrors((prev) => ({
+          ...prev,
+          label: "Please Enter Label",
+        }))
+      }
+      else {
+        setErrors((prev) => ({
+          ...prev,
+          label: "",
+        }))
+
+      }
+    }
+
     // }
   }
   const handleMemberChange = (data) => {
@@ -194,36 +229,52 @@ const Project = () => {
     setselectedPriority([])
   }
   console.log("taskData::", taskData);
+  // const errors = {
+  //   label: '',
+  //   status: '',
+  //   priority: '',
+  //   timeline: ''
+  // };
   const validateForm = () => {
     let valid = true;
-    const newErrors = {
-      label: '',
-      status: '',
-      priority: '',
-      timeline: ''
-    };
 
     if (!taskData.label.trim()) {
-      newErrors.label = 'Task name is required';
+      setErrors((prev) => ({
+        ...prev,
+        label: "Please Enter Label",
+      }))
+      // errors.label = 'Task name is required';
       valid = false;
     }
 
     if (!selectedStatus || !selectedStatus.value) {
-      newErrors.status = 'Status is required';
+      // errors.status = 'Status is required';
+      setErrors((prev) => ({
+        ...prev,
+        status: "Please Select status",
+      }))
       valid = false;
     }
 
     if (!selectedPriority || !selectedPriority.value) {
-      newErrors.priority = 'Priority is required';
+      // errors.priority = 'Priority is required';
+      setErrors((prev) => ({
+        ...prev,
+        priority: "Please Select priority",
+      }))
       valid = false;
     }
 
     if (!taskData.timeline) {
-      newErrors.timeline = 'Timeline is required';
+      // errors.timeline = 'Timeline is required';
+      setErrors((prev) => ({
+        ...prev,
+        timeline: "Please Enter Timeline",
+      }))
       valid = false;
     }
 
-    setErrors(newErrors);
+    // setErrors(errors);
     return valid;
   }
 
@@ -232,7 +283,8 @@ const Project = () => {
     console.log("submited members", selectedMember);
 
     setisSUbmitClick(true)
-    if (!validateForm()) {
+    const validateForm1 = validateForm()
+    if (!validateForm1) {
       return;
     }
     const formData = new FormData()
@@ -295,14 +347,38 @@ const Project = () => {
     setisSUbmitClick(false);
   }
   const handlePriorityChange = (data) => {
-    console.log("");
-    setselectedPriority(data)
+    if (data) {
+      console.log("");
+      setselectedPriority(data)
+      setErrors((prev) => ({
+        ...prev,
+        priority: "",
+      }))
+    }
+    else {
+      setErrors((prev) => ({
+        ...prev,
+        priority: "Please Select Priority",
+      }))
+    }
 
   }
   const handleStatusChange = (data) => {
+    if (data) {
+      console.log("");
+      setselectedStatus(data)
+      setErrors((prev) => ({
+        ...prev,
+        status: "",
+      }))
+    }
+    else {
+      setErrors((prev) => ({
+        ...prev,
+        label: "Please select status",
+      }))
 
-    console.log("");
-    setselectedStatus(data)
+    }
   }
   console.log("log og projeect::", project);
   const handleDeleteProject = async () => {
@@ -621,6 +697,7 @@ const Project = () => {
           {/* </Button> */}
         </Modal.Footer>
       </Modal>
+      {/* task modal */}
       <Modal show={isOpenTaskModal} onHide={() => toggleTaskModal()}>
         {/* isOpenTaskModal */}
         <Modal.Header closeButton>

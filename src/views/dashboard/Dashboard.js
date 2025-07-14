@@ -56,6 +56,8 @@ import MainChart from './MainChart'
 import CommonGrid from '../../components/utils/CommonGrid'
 import { GetApiCall } from '../../ApiCall'
 import DashboardGrid from './DashboardGrid'
+// import PieChart from './PieChart'
+import PieChart123 from './PieChart123'
 
 const Dashboard = () => {
   const progressExample = [
@@ -183,16 +185,29 @@ const Dashboard = () => {
   const accessorKey = ['name', "total_spending_hour", "total_tasks"]
   const [gridData, setgridData] = useState([])
   console.log("grid data gridData ::", gridData);
-  useEffect(() => {
-    const GridDataApiCall = async () => {
-      const data = await GetApiCall("get_member_full_detail")
-      console.log("grid data member ::", data);
-      if (data?.data.success == true) {
-        setgridData(data?.data?.members)
-      }
+  const GridDataApiCall = async () => {
+    const data = await GetApiCall("get_member_full_detail")
+    console.log("grid data member ::", data);
+    if (data?.data.success == true) {
+      setgridData(data?.data?.members)
     }
+  }
+  const [ExpiringTasks, setExpiringTasks] = useState([])
+  const getExpiringSoonTasks = async () => {
+    const data = await GetApiCall("soon_expiry_task")
+    console.log("ExpiringTasks member ::", data);
+    if (data?.data.success == true) {
+      setExpiringTasks(data?.data?.data)
+    }
+  }
+  useEffect(() => {
+
     GridDataApiCall()
+    getExpiringSoonTasks()
   }, [])
+
+  const Exp_headers = ["Name", "Expiry Date", "Status"]
+  const Exp_accessorKey = ["label", "due_date", "status"]
 
   return (
     <>
@@ -204,6 +219,21 @@ const Dashboard = () => {
           data={gridData}
         />
       </div>
+      <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+        {/* <Card> */}
+        <div style={{ flex: 1.33 }}>
+          <DashboardGrid
+            headers={Exp_headers}
+            accessorKey={Exp_accessorKey}
+            data={ExpiringTasks}
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <PieChart123 />
+        </div>
+        {/* </Card> */}
+      </div>
+
       {/* <CCard className="mb-4">
         <CCardBody>
           <CRow>

@@ -222,11 +222,66 @@ const Dashboard = () => {
       <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
         {/* <Card> */}
         <div style={{ flex: 1.33 }}>
-          <DashboardGrid
+          {/* <DashboardGrid
             headers={Exp_headers}
             accessorKey={Exp_accessorKey}
             data={ExpiringTasks}
-          />
+          /> */}
+          <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "Arial, sans-serif" }}>
+            <thead>
+              <tr style={{ backgroundColor: "#f3f4f6", color: "#111827", textAlign: "left" }}>
+                <th style={{ padding: "12px" }}>#</th>
+                <th style={{ padding: "12px" }}>Task Name</th>
+                <th style={{ padding: "12px" }}>Expiry Date</th>
+                <th style={{ padding: "12px" }}>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ExpiringTasks.map((task, index) => {
+                const today = new Date();
+                const todayUTC = new Date(Date.UTC(
+                  today.getUTCFullYear(),
+                  today.getUTCMonth(),
+                  today.getUTCDate()
+                ));
+                const dueDateStr = task?.due_date;
+                if (!dueDateStr) return null;
+                const dueDate = new Date(dueDateStr);
+                const dueDateUTC = new Date(Date.UTC(
+                  dueDate.getUTCFullYear(),
+                  dueDate.getUTCMonth(),
+                  dueDate.getUTCDate()
+                ));
+                const diffTime = dueDateUTC - todayUTC;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                let displayText = "";
+                if (diffDays > 0) {
+                  displayText = `Expires in ${diffDays} day${diffDays > 1 ? "s" : ""}`;
+                } else if (diffDays === 0) {
+                  displayText = "Expires today";
+                } else {
+                  displayText = `Expired ${Math.abs(diffDays)} day${Math.abs(diffDays) > 1 ? "s" : ""} ago`;
+                }
+
+                return (
+                  <tr key={index} style={{ backgroundColor: index % 2 === 0 ? "#ffffff" : "#f9fafb" }}>
+                    <td style={{ padding: "12px" }}>{index + 1}</td>
+                    <td style={{ padding: "12px" }}>{task?.label}</td>
+                    <td style={{ padding: "12px" }}>{new Date(task?.due_date).toLocaleDateString("en-IN", {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric"
+                    })}</td>
+                    <td style={{ padding: "12px", color: diffDays < 0 ? "#b91c1c" : "#2563eb", fontWeight: "500" }}>
+                      {displayText}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
         </div>
         <div style={{ flex: 1 }}>
           <PieChart123 />

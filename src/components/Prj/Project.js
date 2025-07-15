@@ -140,42 +140,43 @@ const Project = () => {
         [name]: value,
       }))
     }
-    if (name == "timeline") {
-      console.log("log im called on time libne");
-      if (!value) {
-        console.log("log im called on time libne empty");
-        setErrors((pre) => ({
-          ...pre,
-            timeline: "Please enter date",
-          }))
-          // errors.timeline = 'Enter date !';
-        }
-        else {
-        console.log("log im called on time libne not empty");
-        // let date = new Date().toISOString().split("T")[0]
-        // if (value < date) {
-        //   settaskData((pre) => ({
-        //     ...pre,
-        //     timeline: null,
-        //   }))
-        //   settaskData((pre) => ({
-        //     ...pre,
-        //     timeline: "Wrong date",
-        //   }))
-        //   return 0;
-        // }
-        // else {
-        setErrors((pre) => ({
-          ...pre,
-          timeline: "",
-        }))
-        settaskData((pre) => ({
-          ...pre,
-          [name]: value,
-        }))
-        // }
-      }
-    }
+    // if (name == "timeline") {
+    //   console.log("log im called on time libne");
+    //   if (!value) {
+    //     console.log("log im called on time libne empty");
+    //     setErrors((pre) => ({
+    //       ...pre,
+    //         timeline: "Please enter date",
+    //       }))
+    //       // errors.timeline = 'Enter date !';
+    //     }
+    //     else {
+    //     console.log("log im called on time libne not empty");
+    //     // let date = new Date().toISOString().split("T")[0]
+    //     // if (value < date) {
+    //     //   settaskData((pre) => ({
+    //     //     ...pre,
+    //     //     timeline: null,
+    //     //   }))
+    //     //   settaskData((pre) => ({
+    //     //     ...pre,
+    //     //     timeline: "Wrong date",
+    //     //   }))
+    //     //   return 0;
+    //     // }
+    //     // else {
+    //     setErrors((pre) => ({
+    //       ...pre,
+    //       timeline: "",
+    //     }))
+    //     settaskData((pre) => ({
+    //       ...pre,
+    //       [name]: value,
+    //     }))
+    //     // }
+    //   }
+    // }
+
     if (name == "label") {
       if (!value) {
         setErrors((prev) => ({
@@ -265,13 +266,37 @@ const Project = () => {
       valid = false;
     }
 
+    // if (!taskData.timeline) {
+    //   // errors.timeline = 'Timeline is required';
+    //   setErrors((prev) => ({
+    //     ...prev,
+    //     timeline: "Please Enter Timeline",
+    //   }))
+    //   valid = false;
+    // }
     if (!taskData.timeline) {
-      // errors.timeline = 'Timeline is required';
       setErrors((prev) => ({
         ...prev,
         timeline: "Please Enter Timeline",
       }))
       valid = false;
+    } else {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const selectedDate = new Date(taskData.timeline);
+
+      if (selectedDate < today) {
+        setErrors((prev) => ({
+          ...prev,
+          timeline: "Date cannot be in the past",
+        }))
+        valid = false;
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          timeline: "",
+        }))
+      }
     }
 
     // setErrors(errors);
@@ -763,7 +788,8 @@ const Project = () => {
             <Col>
               <div className="mb-3">
                 <label className="form-label isStar">Timeline</label>
-                <input type="date" name="timeline" className={`form-control ${errors.timeline ? 'is-invalid' : ''}`} onChange={(e) => handleTaskChange(e)} value={taskData.timeline} min={new Date().toISOString().split('T')[0]} />
+                {/* <input type="date" name="timeline" className={`form-control ${errors.timeline ? 'is-invalid' : ''}`} onChange={(e) => handleTaskChange(e)} value={taskData.timeline} min={new Date().toISOString().split('T')[0]} /> */}
+                <input type="date" name="timeline" className={`form-control ${errors.timeline ? 'is-invalid' : ''}`} onChange={(e) => handleTaskChange(e)} value={taskData.timeline} />
                 {errors.timeline && <div className="invalid-feedback">{errors.timeline}</div>}
               </div>
             </Col>

@@ -112,6 +112,7 @@ const WidgetsDropdown = (props) => {
         {/* {mappedBoxes.map(box)=>( */}
         {/* {dashboardData?.map((box, index) => ( */}
         <div
+            className="dashboard-card"
           style={{
             cursor: "pointer",
             flex: "1 1 240px",
@@ -123,7 +124,8 @@ const WidgetsDropdown = (props) => {
             boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
             padding: "16px 20px",
             gap: "16px",
-            margin: "10px"
+            margin: "10px",
+            transition: "all 0.3s ease",
           }}
         >
           <div
@@ -151,7 +153,9 @@ const WidgetsDropdown = (props) => {
           </div>
         </div>
         <div
+        className="dashboard-card"
           style={{
+            transition: "all 0.3s ease",
             cursor: "pointer",
             flex: "1 1 240px",
             maxWidth: "260px",
@@ -164,7 +168,7 @@ const WidgetsDropdown = (props) => {
             gap: "16px",
             margin: "10px"
           }}
-          className='transition-transform duration-200 hover:scale-105'
+          // className='transition-transform duration-200 hover:scale-105'
         >
           <div
             style={{
@@ -191,7 +195,9 @@ const WidgetsDropdown = (props) => {
           </div>
         </div>
         <div
+        className="dashboard-card"
           style={{
+            transition: "all 0.3s ease",
             cursor: "pointer",
             flex: "1 1 240px",
             maxWidth: "260px",
@@ -230,7 +236,9 @@ const WidgetsDropdown = (props) => {
           </div>
         </div>
         <div
+        className="dashboard-card"
           style={{
+            transition: "all 0.3s ease",
             cursor: "pointer",
             flex: "1 1 240px",
             maxWidth: "260px",
@@ -269,7 +277,9 @@ const WidgetsDropdown = (props) => {
           </div>
         </div>
         <div
+        className="dashboard-card"
           style={{
+            transition: "all 0.3s ease",
             cursor: "pointer",
             flex: "1 1 240px",
             maxWidth: "260px",

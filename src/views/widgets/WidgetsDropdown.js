@@ -270,9 +270,9 @@ const WidgetsDropdown = (props) => {
               InProgress
             </p>
             <p className="fw-bold" style={{ fontSize: "24px", margin: 0 }}>
-              <CountUp start={0} delay={2} end={dashboardData?.inprogress_task?.task || 0} />
+              <CountUp start={0} delay={1} end={dashboardData?.inprogress_task?.task || 0} />
               /<span style={{ fontSize: "16px" }} className='text-muted'>
-                <CountUp start={0} delay={2} end={dashboardData?.inprogress_task?.hours || 0} />h</span>
+                <CountUp start={0} delay={1} end={dashboardData?.inprogress_task?.hours || 0} />h</span>
             </p>
           </div>
         </div>

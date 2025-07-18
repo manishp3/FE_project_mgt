@@ -340,7 +340,7 @@ const Login = () => {
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>
-                        <CButton color="primary" className="px-4" disabled={issignInDisabled}
+                        <CButton type="submit" color="primary" className="px-4" disabled={issignInDisabled}
                           onClick={handleSignIn}>
                           Login
                         </CButton>
@@ -414,7 +414,7 @@ const Login = () => {
             <Button variant="secondary" onClick={() => setsignInOtpMOdal(false)}>
               Close
             </Button>
-            <Button variant="primary" onClick={verifySignInOtp}>
+            <Button variant="primary" type="submit" onClick={verifySignInOtp}>
               Verify OTP
             </Button>
           </Modal.Footer>

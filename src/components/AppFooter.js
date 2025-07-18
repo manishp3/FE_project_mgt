@@ -11,7 +11,7 @@ const AppFooter = () => {
         <span className="ms-1">&copy; 2025 creativeLabs.</span>
       </div> */}
       <div className="ms-auto">
-        <span className="me-1">Powered by</span>
+        <span className="me-1">Design and Developed By</span>
         <a href="https://portfoliobymanish.netlify.app/" target="_blank" rel="noopener noreferrer">
           MD
         </a>

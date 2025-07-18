@@ -658,7 +658,7 @@ const Project = () => {
           margin: "5px 5px "
         }}>
 
-          <button type="button" class="btn btn-primary waves-effect waves-light" onClick={openCreateTaskModal}><IoMdAdd /> Add Task</button>
+          <button type="button" className="btn btn-primary waves-effect waves-light" onClick={openCreateTaskModal}><IoMdAdd /> Add Task</button>
           {/* <Button > Create Task</Button> */}
         </div>
         <CommonGrid
@@ -712,8 +712,8 @@ const Project = () => {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <button type="button" onClick={toggleTimeModal} class="btn btn-danger waves-effect waves-light">Cancel</button>
-          <button type="button" disabled={!isValid} class={isValid ? "btn btn-success waves-light" : "btn btn-light waves-effect"} onClick={handleTimeTrackingSave}>Save</button>
+          <button type="button" onClick={toggleTimeModal} className="btn btn-danger waves-effect waves-light">Cancel</button>
+          <button type="button" disabled={!isValid} className={isValid ? "btn btn-success waves-light" : "btn btn-light waves-effect"} onClick={handleTimeTrackingSave}>Save</button>
           {/* <Button variant={isValid ? "success" : "light"} onClick={handleTimeTrackingSave}> */}
 
           {/* </Button> */}
@@ -826,11 +826,11 @@ const Project = () => {
 
         </Modal.Body>
         <Modal.Footer>
-          <button type="button" class={"btn btn-danger success waves-light"} onClick={toggleTaskModal}>Cancel</button>
+          <button type="button" className={"btn btn-danger success waves-light"} onClick={toggleTaskModal}>Cancel</button>
           {/* <Button variant="secondary" onClick={() => setisOpenTaskModal(false)}>
             Cancel
           </Button> */}
-          <button type="button" class={"btn btn-success waves-light"} onClick={handleCreateTask}>{EditId ? "Update" : "Save"}</button>
+          <button type="button" className={"btn btn-success waves-light"} onClick={handleCreateTask}>{EditId ? "Update" : "Save"}</button>
           {/* <Button variant="primary" onClick={handleCreateTask}>
             {EditId ? "Update" : "Create"}
           </Button> */}

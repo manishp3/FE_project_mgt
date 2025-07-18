@@ -58,8 +58,11 @@ import { GetApiCall } from '../../ApiCall'
 import DashboardGrid from './DashboardGrid'
 // import PieChart from './PieChart'
 import PieChart123 from './PieChart123'
+import { Card, CardBody, CardHeader } from 'reactstrap'
+import { useNavigate } from 'react-router-dom'
 
 const Dashboard = () => {
+  const navigate = useNavigate()
   const progressExample = [
     { title: 'Visits', value: '29.703 Users', percent: 40, color: 'success' },
     { title: 'Unique', value: '24.093 Users', percent: 20, color: 'info' },
@@ -201,7 +204,6 @@ const Dashboard = () => {
     }
   }
   useEffect(() => {
-
     GridDataApiCall()
     getExpiringSoonTasks()
   }, [])
@@ -209,15 +211,23 @@ const Dashboard = () => {
   const Exp_headers = ["Name", "Expiry Date", "Status"]
   const Exp_accessorKey = ["label", "due_date", "status"]
 
+
   return (
     <>
       <WidgetsDropdown className="mb-4" />
       <div>
-        <DashboardGrid
-          headers={headers}
-          accessorKey={accessorKey}
-          data={gridData}
-        />
+        <Card>
+          <CardHeader>
+            Members Details
+          </CardHeader>
+          <CardBody>
+            <DashboardGrid
+              headers={headers}
+              accessorKey={accessorKey}
+              data={gridData}
+            />
+          </CardBody>
+        </Card>
       </div>
       <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
         {/* <Card> */}
@@ -227,67 +237,81 @@ const Dashboard = () => {
             accessorKey={Exp_accessorKey}
             data={ExpiringTasks}
           /> */}
-          <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "Arial, sans-serif" }}>
-            <thead>
-              <tr style={{ backgroundColor: "#f3f4f6", color: "#111827", textAlign: "left" }}>
-                <th style={{ padding: "12px" }}>#</th>
-                <th style={{ padding: "12px" }}>Task Name</th>
-                <th style={{ padding: "12px" }}>Expiry Date</th>
-                <th style={{ padding: "12px" }}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ExpiringTasks.map((task, index) => {
-                const today = new Date();
-                const todayUTC = new Date(Date.UTC(
-                  today.getUTCFullYear(),
-                  today.getUTCMonth(),
-                  today.getUTCDate()
-                ));
-                const dueDateStr = task?.due_date;
-                if (!dueDateStr) return null;
-                const dueDate = new Date(dueDateStr);
-                const dueDateUTC = new Date(Date.UTC(
-                  dueDate.getUTCFullYear(),
-                  dueDate.getUTCMonth(),
-                  dueDate.getUTCDate()
-                ));
-                const diffTime = dueDateUTC - todayUTC;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                let displayText = "";
-                if (diffDays > 0) {
-                  displayText = `Expires in ${diffDays} day${diffDays > 1 ? "s" : ""}`;
-                } else if (diffDays === 0) {
-                  displayText = "Expires today";
-                } else {
-                  displayText = `Expired ${Math.abs(diffDays)} day${Math.abs(diffDays) > 1 ? "s" : ""} ago`;
-                }
-
-                return (
-                  <tr key={index} style={{ backgroundColor: index % 2 === 0 ? "#ffffff" : "#f9fafb" }}>
-                    <td style={{ padding: "12px" }}>{index + 1}</td>
-                    <td style={{ padding: "12px" }}>{task?.label}</td>
-                    <td style={{ padding: "12px" }}>{new Date(task?.due_date).toLocaleDateString("en-IN", {
-                      day: "2-digit",
-                      month: "long",
-                      year: "numeric"
-                    })}</td>
-                    <td style={{ padding: "12px", color: diffDays < 0 ? "#b91c1c" : "#2563eb", fontWeight: "500" }}>
-                      {displayText}
-                    </td>
+          <Card>
+            <CardHeader>
+              Soon Expriring Tasks
+            </CardHeader>
+            <CardBody>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "Arial, sans-serif" }}>
+                <thead>
+                  <tr style={{ backgroundColor: "#f3f4f6", color: "#111827", textAlign: "left" }}>
+                    <th style={{ padding: "12px" }}>#</th>
+                    <th style={{ padding: "12px" }}>Task Name</th>
+                    <th style={{ padding: "12px" }}>Expiry Date</th>
+                    <th style={{ padding: "12px" }}>Status</th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {ExpiringTasks.map((task, index) => {
+                    const today = new Date();
+                    const todayUTC = new Date(Date.UTC(
+                      today.getUTCFullYear(),
+                      today.getUTCMonth(),
+                      today.getUTCDate()
+                    ));
+                    const dueDateStr = task?.due_date;
+                    if (!dueDateStr) return null;
+                    const dueDate = new Date(dueDateStr);
+                    const dueDateUTC = new Date(Date.UTC(
+                      dueDate.getUTCFullYear(),
+                      dueDate.getUTCMonth(),
+                      dueDate.getUTCDate()
+                    ));
+                    const diffTime = dueDateUTC - todayUTC;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    let displayText = "";
+                    if (diffDays > 0) {
+                      displayText = `Expires in ${diffDays} day${diffDays > 1 ? "s" : ""}`;
+                    } else if (diffDays === 0) {
+                      displayText = "Expires today";
+                    } else {
+                      displayText = `Expired ${Math.abs(diffDays)} day${Math.abs(diffDays) > 1 ? "s" : ""} ago`;
+                    }
+
+                    return (
+                      <tr key={index} style={{ backgroundColor: index % 2 === 0 ? "#ffffff" : "#f9fafb" }}>
+                        <td style={{ padding: "12px" }}>{index + 1}</td>
+                        <td style={{ padding: "12px", cursor: "pointer" }} title="Click to Navigate" onClick={() => navigate("../projects/project", { state: { project_id: task.project_id } })}>{task?.label}</td>
+                        <td style={{ padding: "12px" }}>{new Date(task?.due_date).toLocaleDateString("en-IN", {
+                          day: "2-digit",
+                          month: "long",
+                          year: "numeric"
+                        })}</td>
+                        <td style={{ padding: "12px", color: diffDays < 0 ? "#b91c1c" : "#2563eb", fontWeight: "500" }}>
+                          {displayText}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </CardBody>
+          </Card>
 
         </div>
         <div style={{ flex: 1 }}>
-          <PieChart123 />
+          <Card>
+            <CardHeader>
+              Projects
+            </CardHeader>
+            <CardBody>
+              <PieChart123 />
+            </CardBody>
+          </Card>
         </div>
         {/* </Card> */}
-      </div>
+      </div >
 
       {/* <CCard className="mb-4">
         <CCardBody>

@@ -37,9 +37,9 @@ const ProjectsPage = () => {
     console.log("getProjectsDetails data::", response);
     // return response;
   }
+  console.log("getProjectsDetails data::users", AllProjects);
   async function getMembersDetails() {
     const data = await GetApiCall("users");
-    console.log("getProjectsDetails data::users", data);
     // return data;
     // setMembers(data.data.user.map(user=>user.email))
     setMembers(data?.data?.user)
@@ -265,7 +265,7 @@ const ProjectsPage = () => {
                 </CDropdown>
               </div>
               <div onClick={() => navigate("project", { state: { project_id: project._id } })}>
-                <p style={{ margin: 0, fontWeight: 500 }}>Project Name :{project?.project_name.length > 10 ? project?.project_name.slice(0, 17) : project?.project_name}</p>
+                <p style={{ margin: 0 }}>Project Name :{project?.project_name.length > 10 ? project?.project_name.slice(0, 17) : <span style={{ fontWeight: 500 }}> {project?.project_name}</span>}</p>
                 <p>Total Tasks: {project?.total_task}</p>
                 <p> <span style={{ paddingRight: "10px" }}>Members:</span>
                   {

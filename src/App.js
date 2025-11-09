@@ -1,25 +1,23 @@
 import React, { Suspense, useEffect } from 'react'
-import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-
 import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
-
-// We use those styles to show code examples, you should remove them in your application.
 import './scss/examples.scss'
 import { ToastContainer } from 'react-toastify'
-
 
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
 
 // Pages
-const Login = React.lazy(() => import('./views/pages/login/Login'))
-const Register = React.lazy(() => import('./views/pages/register/Register'))
-const Forgot = React.lazy(() => import('./views/pages/forgot/Forgot'))
-const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
-const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
+const Login = React.lazy(() => import('./components/views/pages/login/Login'))
+const Register = React.lazy(() => import('./components/views/pages/register/Register'))
+const Forgot = React.lazy(() => import('./components/views/pages/forgot/Forgot'))
+const Page404 = React.lazy(() => import('./components/views/pages/page404/Page404'))
+const Page500 = React.lazy(() => import('./components/views/pages/page500/Page500'))
+import VerifyOtp from './components/views/pages/forgot/VerifyOtp'
 
-import VerifyOtp from './views/pages/forgot/VerifyOtp'
+import ProtectedRoute from './components/ProtectedRoute'
+import UnProtected from './components/UnProtected'
 
 const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
@@ -41,7 +39,6 @@ const App = () => {
 
   return (
     <BrowserRouter>
-
       <Suspense
         fallback={
           <div className="pt-3 text-center">
@@ -50,14 +47,52 @@ const App = () => {
         }
       >
         <Routes>
-          <Route exact path="/" name="Login Page" element={<Login />} />
-          <Route exact path="/login" name="Login Page" element={<Login />} />
-          <Route exact path="/register" name="Register Page" element={<Register />} />
-          <Route exact path="/veirfyOtp" name="Verify OTP Page" element={<VerifyOtp />} />
-          <Route exact path="/forgotpassword" name="Forgot Password Page" element={<Forgot />} />
-          <Route exact path="/404" name="Page 404" element={<Page404 />} />
-          <Route exact path="/500" name="Page 500" element={<Page500 />} />
-          <Route path="*" name="Home" element={<DefaultLayout />} />
+          {/* Public (Unprotected) routes */}
+          <Route
+            path="/login"
+            element={
+              <UnProtected>
+                <Login />
+              </UnProtected>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <UnProtected>
+                <Register />
+              </UnProtected>
+            }
+          />
+          <Route
+            path="/forgotpassword"
+            element={
+              <UnProtected>
+                <Forgot />
+              </UnProtected>
+            }
+          />
+          <Route
+            path="/verifyOtp"
+            element={
+              <UnProtected>
+                <VerifyOtp />
+              </UnProtected>
+            }
+          />
+
+          {/* Protected routes */}
+          <Route
+            path="*"
+            element={
+              <ProtectedRoute>
+                <DefaultLayout />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Optional redirect for root */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </Suspense>
       <ToastContainer />

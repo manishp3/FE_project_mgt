@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { useDrawingArea } from '@mui/x-charts/hooks';
 import { styled } from '@mui/material/styles';
-import { GetApiCall } from '../../ApiCall';
+import { GetApiCall } from '../../../ApiCall';
 
 const size = {
   width: 250,

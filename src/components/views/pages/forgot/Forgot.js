@@ -15,7 +15,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
-import { PostApiCall } from '../../../ApiCall'
+import { PostApiCall } from '../../../../ApiCall'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import OTPInput from 'react-otp-input';
@@ -26,26 +26,10 @@ import { Modal } from '@coreui/coreui'
 const Forgot = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  
+
   console.log("location FORGOT OTP::", location);
 
-  const [forDatasignUp, setforDatasignUp] = useState({
-    userName: "",
-    email: "",
-    password: "",
-  });
-  const verifyforgotOTP = async () => {
-    // const response = await PostApiCall("Forgot/", {
-    const response = await PostApiCall("verifyforgototp/", {
-      otp: otp,
-      userId: location.state.mailIdRef,
-    });
-    console.log("handleveryfyOtp::", response);
-    if (response.success == true) {
-      // setisOpenChangePasswordModal(true);
-      setOtp("");
-    }
-  };
+
   const [otp, setOtp] = useState("");
 
   const [changePwdFormdata, setchangePwdFormdata] = useState({
@@ -53,13 +37,26 @@ const Forgot = () => {
     ccPassword: "",
   });
   const handleForgotPassword = async () => {
+    if (!changePwdFormdata.cPassword || !changePwdFormdata.ccPassword) {
+      toast.error("Please enter both password fields");
+      return;
+    }
+
+
+    if (changePwdFormdata.cPassword !== changePwdFormdata.ccPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
     const response = await PostApiCall("forgotpassword/", {
       password: changePwdFormdata.cPassword,
       user_id: location.state.mailIdRef,
     });
     console.log("forgot respomse ::", response);
 
-    if (response.success == true) {
+    if (response.status_code == 400) {
+      toast.error(response.msg)
+    }
+    if (response.status_code == 200) {
       navigate("/login")
       console.log("forgot respomse ::1", response.msg);
 
@@ -100,6 +97,13 @@ const Forgot = () => {
           ccPasswordError: "Please Enter Confirm Password",
         }));
       } else {
+        if (changePwdFormdata.cPassword !== changePwdFormdata.ccPassword) {
+          setchangePwdFormdataError((pre) => ({
+            ...pre,
+            ccPasswordError: "please enter same password",
+          }));
+
+        }
         setchangePwdFormdataError((pre) => ({
           ...pre,
           ccPasswordError: "",
@@ -150,42 +154,6 @@ const Forgot = () => {
                       />
                     </CInputGroup>
                   </CForm>
-                  {/* <Form.Label>Password</Form.Label>
-                  <Form.Control
-                    type="password"
-                    placeholder="Password"
-                    name="cPassword"
-                    value={changePwdFormdata.cPassword}
-                    onChange={handleChangePasswordonChange}
-
-                  /> */}
-                  {/* {signInError.passwordError != "" ? (
-                    <p style={{ color: "red" }}>{signInError.passwordError}</p>
-                  ) : (
-                    ""
-                  )} */}
-
-
-                  {/* <Form.Label>Confirm Password</Form.Label>
-                  <Form.Control
-                    type="password"
-                    placeholder="Confirm Password"
-                    name="ccPassword"
-                    value={changePwdFormdata.ccPassword}
-                    onChange={handleChangePasswordonChange}
-
-                  /> */}
-                  {/* {changePwdFormdataError.ccPasswordError != "" ? (
-                    <p style={{ color: "red" }}>
-                      {changePwdFormdataError.ccPasswordError}
-                    </p>
-                  ) : (
-                    ""
-                  )} */}
-
-
-
-
                 </div>
               </CCardBody>
               <CCardFooter className='d-flex justify-content-end'>

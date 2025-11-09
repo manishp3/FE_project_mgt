@@ -13,7 +13,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilImage, cilLockLocked, cilUser } from '@coreui/icons'
-import { PostApiCall } from '../../../ApiCall'
+import { PostApiCall } from '../../../../ApiCall'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -268,6 +268,7 @@ const Register = () => {
                     <CFormInput
                       type="file"
                       name="image"
+                      accept="image/*"
                       className={`${signUpError.imageError && "is-invalid"}`}
                       placeholder="Profile image"
                       // autoComplete="new-password"

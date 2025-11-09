@@ -42,7 +42,7 @@ const AppHeaderDropdown = () => {
     console.log("authUser useEffect::", authUser);
     const localData = JSON.parse(localStorage.getItem("authUser"))
     setauthUser(localData)
-    setEditableData({ username: localData.username, email: localData.email })
+    setEditableData({ username: localData?.username, email: localData?.email })
   }, [isOpenProfiel])
 
   const handleOpenProfileCard = () => {
@@ -105,7 +105,10 @@ const AppHeaderDropdown = () => {
     }
     const udata = await PostApiCall("change-password", payload)
     console.log("change-password::", udata);
-    if (udata.success == true) {
+    if (udata.status_code == 401 || udata.status_code == 404) {
+      toast.error(udata.msg)
+    }
+    else if (udata.status_code == 200) {
       localStorage.setItem('authUser', JSON.stringify(udata.update_user))
       localStorage.setItem('token', udata.token)
       toast.success(udata.msg)

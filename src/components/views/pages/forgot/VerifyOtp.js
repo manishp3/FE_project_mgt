@@ -15,7 +15,8 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
-import { PostApiCall } from '../../../ApiCall'
+// import { PostApiCall } from '../../../ApiCall'
+import { PostApiCall } from '../../../../ApiCall'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import OTPInput from 'react-otp-input';
@@ -27,14 +28,20 @@ const VerifyOtp = () => {
   console.log("location FORGOT OTP::", location);
 
   const verifyforgotOTP = async () => {
-    
+
     const response = await PostApiCall("verifyforgototp/", {
       otp: otp,
       userId: location.state.mailRefId,
     });
     console.log("handleveryfyOtp::", response);
-    if (response.success == true) {
-      navigate("/forgotpassword",{state:{mailIdRef:location.state.mailRefId}})
+    if (response.status_code == 401) {
+      toast.error(response.msg)
+    }
+    else if (response.status_code == 401) {
+      toast.error(response.msg)
+    }
+    else if (response.status_code == 200) {
+      navigate("/forgotpassword", { state: { mailIdRef: location.state.mailRefId } })
       setisOpenChangePasswordModal(true);
       setOtp("");
     }

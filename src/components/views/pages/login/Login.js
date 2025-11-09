@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { GetApiCall, PostApiCall } from "../../../ApiCall";
+import { GetApiCall, PostApiCall } from "../../../../ApiCall";
 import { Modal, Button, Form, Nav } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import OTPInput from "react-otp-input";
@@ -77,37 +77,6 @@ const Login = () => {
       }
     }
   };
-  const handleSignInonBlur = (e) => {
-    const { name, value, validity } = e.target;
-    console.log("handleSignInonBlur::", e.target);
-    console.log("handleSignInonBlur::", name, value);
-    if (name == "email") {
-      if (validity.valid == 0 || !value) {
-        setsignInError((prev) => ({
-          ...prev,
-          emailEror: 1,
-        }));
-      } else {
-        setsignInError((prev) => ({
-          ...prev,
-          emailEror: 0,
-        }));
-      }
-    }
-    if (name == "password") {
-      if (!value) {
-        setsignInError((prev) => ({
-          ...prev,
-          passwordError: 1,
-        }));
-      } else {
-        setsignInError((prev) => ({
-          ...prev,
-          passwordError: 0,
-        }));
-      }
-    }
-  };
 
   const [signInOtpMOdal, setsignInOtpMOdal] = useState(false);
   const handleSignIn = async () => {
@@ -138,8 +107,14 @@ const Login = () => {
     try {
       const data = await PostApiCall("signin/", payload);
       console.log("log success sigin::", data);
-      toast.success(data.msg)
-      if (data.success == true) {
+      if (data.status_code == 401) {
+        toast.error(data.msg)
+      }
+      else if (data.status_code == 404) {
+        toast.error(data.msg)
+      }
+      else if (data.status_code == 200) {
+        toast.success(data.msg)
         setOtp("");
         setissignInDisabled(false);
         setsignInOtpMOdal(true);
@@ -151,7 +126,7 @@ const Login = () => {
     }
   };
   console.log("forDatasignin email check::", forDatasignin);
-  const [forgotUserMailIRef, setforgotUserMailIRef] = useState(0);
+  // const [forgotUserMailIRef, setforgotUserMailIRef] = useState(0);
   const handleForgot = async () => {
 
     console.log("forDatasignin::", forDatasignin);
@@ -168,10 +143,13 @@ const Login = () => {
         const response = await PostApiCall("sendforgototp/", {
           email: forDatasignin.email,
         });
-        setforgotUserMailIRef(response.email);
-        // setShowForgot(true);
-        navigate("/veirfyOtp", { state: { mailRefId: response.email } })
         console.log("log of resposen senfotp::", response);
+        if (response.status_code == 404) {
+          toast.error(response.msg)
+        }
+        else {
+          navigate("/verifyOtp", { state: { mailRefId: response.email } })
+        }
       } catch (error) {
         console.log("log of resposen error::", error);
       } finally {
@@ -188,18 +166,7 @@ const Login = () => {
 
   console.log("etnerd otp::", otp);
 
-  const verifyforgotOTP = async () => {
-    // const response = await PostApiCall("verifyotp/", {
-    const response = await PostApiCall("verifyforgototp/", {
-      otp: otp,
-      userId: forgotUserMailIRef,
-    });
-    console.log("handleveryfyOtp::", response);
-    if (response.success == true) {
-      setisOpenChangePasswordModal(true);
-      setOtp("");
-    }
-  };
+
   const verifySignInOtp = async () => {
     // const response = await PostApiCall("verifyotp/", {
     const response = await PostApiCall("verifyotp/", {
@@ -284,21 +251,7 @@ const Login = () => {
       }
     }
   };
-  const handleForgotPassword = async () => {
-    const response = await PostApiCall("forgotpassword/", {
-      password: changePwdFormdata.cPassword,
-      user_id: forgotUserMailIRef,
-    });
-    console.log("forgot respomse ::", response);
 
-    if (response.success == true) {
-      console.log("forgot respomse ::1", response.msg);
-
-      // setShowForgot(false);
-      setisOpenChangePasswordModal(false);
-      toast.success(response.msg);
-    }
-  };
   const [isTypePassword, setisTypePassword] = useState(true)
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
@@ -361,8 +314,7 @@ const Login = () => {
                   <div>
                     <h2>Sign up</h2>
                     <p>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                      tempor incididunt ut labore et dolore magna aliqua.
+                      Manage your tasks efficiently with our smart Task Management System. Stay on top of deadlines, boost productivity, and collaborate effortlessly — all in one place.
                     </p>
                     <Link to="/register">
                       <CButton color="primary" className="mt-3" active tabIndex={-1}>

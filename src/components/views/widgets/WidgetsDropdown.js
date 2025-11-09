@@ -15,7 +15,7 @@ import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
 import { cilArrowBottom, cilArrowTop, cilOptions } from '@coreui/icons'
 import { Col } from 'react-bootstrap'
-import { GetApiCall } from '../../ApiCall'
+import { GetApiCall } from '../../../ApiCall'
 import CountUp from 'react-countup'
 
 const WidgetsDropdown = (props) => {

@@ -27,7 +27,7 @@ import {
 } from '@coreui/icons'
 
 import { AppBreadcrumb } from './index'
-import { AppHeaderDropdown } from './header/index'
+import { AppHeaderDropdown } from '../layout/header/index'
 import { GetApiCall } from '../ApiCall'
 import { Button, Modal, ModalBody } from 'reactstrap'
 import { ModalFooter } from 'react-bootstrap'

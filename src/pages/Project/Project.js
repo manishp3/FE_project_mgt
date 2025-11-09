@@ -1,4 +1,3 @@
-// before adding gpt validtion 
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFolderOpen, faAdd, faTrash, faStar } from '@fortawesome/free-solid-svg-icons';
@@ -7,14 +6,16 @@ import Select from "react-select"
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, ProgressBar } from 'react-bootstrap';
 import { CHeader, CModal, CModalBody, CModalFooter, CModalHeader, CButton, CInputGroup, CInputGroupText, CFormInput, CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem } from '@coreui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import CommonGrid from '../utils/CommonGrid';
+// import CommonGrid from '../utils/CommonGrid';
+import CommonGrid from '../../utils/CommonGrid';
 import moment from "moment";
 import { IoMdAdd } from "react-icons/io";
 import { Card, Col, Row } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { MdKeyboardArrowUp, MdKeyboardArrowDown } from 'react-icons/md';
 import { FaEquals } from "react-icons/fa";
-import { convertInputedToMainFormat } from '../service/TimeFormat';
+// import { convertInputedToMainFormat } from '../service/TimeFormat';
+import { convertInputedToMainFormat } from '../../service/TimeFormat'; 
 
 
 // import Project from './Projects';
@@ -37,6 +38,15 @@ const Project = () => {
     attachement: null,
     // assign_to: "",
   })
+  const [errors, setErrors] = useState({
+    label: '',
+    status: '',
+    priority: '',
+    timeline: ''
+  });
+
+  console.log("create task  error ::", errors);
+
   const [imageData, setimageData] = useState(null)
   const [refresData, setrefresData] = useState(0)
   const projectStatus = [
@@ -110,44 +120,81 @@ const Project = () => {
     }
   }
   useEffect(() => {
-    getProjectTask()
+    getProjectTask();
   }, [location])
 
-
   console.log("projectTasks::", projectTasks);
-
-
 
   const handleTaskChange = (e) => {
     const { name, value } = e.target;
     console.log("log of e ::", e.target);
 
     if (name == "attachement") {
+
       settaskData((pre) => ({
         ...pre,
         [name]: e.target.files[0]
       }))
     }
-    if (name == "timeline") {
-      let date = new Date().toISOString().split("T")[0]
-      if (value < date) {
-        settaskData((pre) => ({
-          ...pre,
-          timeline: null,
+    else {
+      settaskData((pre) => ({
+        ...pre,
+        [name]: value,
+      }))
+    }
+    // if (name == "timeline") {
+    //   console.log("log im called on time libne");
+    //   if (!value) {
+    //     console.log("log im called on time libne empty");
+    //     setErrors((pre) => ({
+    //       ...pre,
+    //         timeline: "Please enter date",
+    //       }))
+    //       // errors.timeline = 'Enter date !';
+    //     }
+    //     else {
+    //     console.log("log im called on time libne not empty");
+    //     // let date = new Date().toISOString().split("T")[0]
+    //     // if (value < date) {
+    //     //   settaskData((pre) => ({
+    //     //     ...pre,
+    //     //     timeline: null,
+    //     //   }))
+    //     //   settaskData((pre) => ({
+    //     //     ...pre,
+    //     //     timeline: "Wrong date",
+    //     //   }))
+    //     //   return 0;
+    //     // }
+    //     // else {
+    //     setErrors((pre) => ({
+    //       ...pre,
+    //       timeline: "",
+    //     }))
+    //     settaskData((pre) => ({
+    //       ...pre,
+    //       [name]: value,
+    //     }))
+    //     // }
+    //   }
+    // }
+
+    if (name == "label") {
+      if (!value) {
+        setErrors((prev) => ({
+          ...prev,
+          label: "Please Enter Label",
         }))
-        return 0;
       }
-      else{
-        settaskData((pre) => ({
-          ...pre,
-          [name]: value,
+      else {
+        setErrors((prev) => ({
+          ...prev,
+          label: "",
         }))
+
       }
     }
-    settaskData((pre) => ({
-      ...pre,
-      [name]: value
-    }))
+
     // }
   }
   const handleMemberChange = (data) => {
@@ -175,16 +222,98 @@ const Project = () => {
       timeline: null,
       attachement: null,
     })
+    setErrors({
+      label: '',
+      status: '',
+      priority: '',
+      timeline: ''
+    });
     setselectedMember([])
     setselectedPriority([])
   }
   console.log("taskData::", taskData);
+  // const errors = {
+  //   label: '',
+  //   status: '',
+  //   priority: '',
+  //   timeline: ''
+  // };
+  const validateForm = () => {
+    let valid = true;
+
+    if (!taskData.label.trim()) {
+      setErrors((prev) => ({
+        ...prev,
+        label: "Please Enter Label",
+      }))
+      // errors.label = 'Task name is required';
+      valid = false;
+    }
+
+    if (!selectedStatus || !selectedStatus.value) {
+      // errors.status = 'Status is required';
+      setErrors((prev) => ({
+        ...prev,
+        status: "Please Select status",
+      }))
+      valid = false;
+    }
+
+    if (!selectedPriority || !selectedPriority.value) {
+      // errors.priority = 'Priority is required';
+      setErrors((prev) => ({
+        ...prev,
+        priority: "Please Select priority",
+      }))
+      valid = false;
+    }
+
+    // if (!taskData.timeline) {
+    //   // errors.timeline = 'Timeline is required';
+    //   setErrors((prev) => ({
+    //     ...prev,
+    //     timeline: "Please Enter Timeline",
+    //   }))
+    //   valid = false;
+    // }
+    if (!taskData.timeline) {
+      setErrors((prev) => ({
+        ...prev,
+        timeline: "Please Enter Timeline",
+      }))
+      valid = false;
+    } else {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const selectedDate = new Date(taskData.timeline);
+
+      if (selectedDate < today) {
+        setErrors((prev) => ({
+          ...prev,
+          timeline: "Date cannot be in the past",
+        }))
+        valid = false;
+      } else {
+        setErrors((prev) => ({
+          ...prev,
+          timeline: "",
+        }))
+      }
+    }
+
+    // setErrors(errors);
+    return valid;
+  }
 
   const [isSUbmitClick, setisSUbmitClick] = useState(false)
   const handleCreateTask = async () => {
     console.log("submited members", selectedMember);
 
     setisSUbmitClick(true)
+    const validateForm1 = validateForm()
+    if (!validateForm1) {
+      return;
+    }
     const formData = new FormData()
     formData.append("label", taskData.label)
     formData.append("summary", taskData.summary)
@@ -231,6 +360,12 @@ const Project = () => {
       setselectedPriority([])
       setselectedMember([])
       setisOpenTaskModal(false)
+      setErrors({
+        label: '',
+        status: '',
+        priority: '',
+        timeline: ''
+      });
       getProjectTask()
     }
     else {
@@ -239,14 +374,38 @@ const Project = () => {
     setisSUbmitClick(false);
   }
   const handlePriorityChange = (data) => {
-    console.log("");
-    setselectedPriority(data)
+    if (data) {
+      console.log("");
+      setselectedPriority(data)
+      setErrors((prev) => ({
+        ...prev,
+        priority: "",
+      }))
+    }
+    else {
+      setErrors((prev) => ({
+        ...prev,
+        priority: "Please Select Priority",
+      }))
+    }
 
   }
   const handleStatusChange = (data) => {
+    if (data) {
+      console.log("");
+      setselectedStatus(data)
+      setErrors((prev) => ({
+        ...prev,
+        status: "",
+      }))
+    }
+    else {
+      setErrors((prev) => ({
+        ...prev,
+        label: "Please select status",
+      }))
 
-    console.log("");
-    setselectedStatus(data)
+    }
   }
   console.log("log og projeect::", project);
   const handleDeleteProject = async () => {
@@ -501,7 +660,7 @@ const Project = () => {
           margin: "5px 5px "
         }}>
 
-          <button type="button" class="btn btn-primary waves-effect waves-light" onClick={openCreateTaskModal}><IoMdAdd /> Add Task</button>
+          <button type="button" className="btn btn-primary waves-effect waves-light" onClick={openCreateTaskModal}><IoMdAdd /> Add Task</button>
           {/* <Button > Create Task</Button> */}
         </div>
         <CommonGrid
@@ -555,8 +714,8 @@ const Project = () => {
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <button type="button" onClick={toggleTimeModal} class="btn btn-danger waves-effect waves-light">Cancel</button>
-          <button type="button" disabled={!isValid} class={isValid ? "btn btn-success waves-light" : "btn btn-light waves-effect"} onClick={handleTimeTrackingSave}>Save</button>
+          <button type="button" onClick={toggleTimeModal} className="btn btn-danger waves-effect waves-light">Cancel</button>
+          <button type="button" disabled={!isValid} className={isValid ? "btn btn-success waves-light" : "btn btn-light waves-effect"} onClick={handleTimeTrackingSave}>Save</button>
           {/* <Button variant={isValid ? "success" : "light"} onClick={handleTimeTrackingSave}> */}
 
           {/* </Button> */}
@@ -565,6 +724,7 @@ const Project = () => {
           {/* </Button> */}
         </Modal.Footer>
       </Modal>
+      {/* task modal */}
       <Modal show={isOpenTaskModal} onHide={() => toggleTaskModal()}>
         {/* isOpenTaskModal */}
         <Modal.Header closeButton>
@@ -574,8 +734,9 @@ const Project = () => {
           <Row>
             <Col>
               <div className="mb-3">
-                <label className="form-label">Task Name</label>
-                <input type="text" name="label" value={taskData.label} className="form-control" placeholder="Enter task name" onChange={(e) => handleTaskChange(e)} />
+                <label className="form-label isStar">Task Name</label>
+                <input type="text" name="label" value={taskData.label} className={`form-control ${errors.label ? 'is-invalid' : ''}`} placeholder="Enter task name" onChange={(e) => handleTaskChange(e)} />
+                {errors.label && <div className="invalid-feedback">{errors.label}</div>}
               </div>
             </Col>
             <Col>
@@ -605,11 +766,12 @@ const Project = () => {
             </Col>
             <Col>
               <div className='mb-3'>
-                <label className='form-label'>Priority</label>
+                <label className='form-label isStar'>Priority</label>
                 <Select
                   options={taskPriority}
                   value={selectedPriority}
                   isMulti={false}
+                  className={`${errors.priority ? 'is-invalid' : ''}`}
                   onChange={(e) => handlePriorityChange(e)}
                   getOptionLabel={(e) => (
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -618,6 +780,7 @@ const Project = () => {
                     </div>
                   )}
                 />
+                {errors.priority && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.priority}</div>}
               </div>
 
             </Col>
@@ -626,19 +789,23 @@ const Project = () => {
           <Row>
             <Col>
               <div className="mb-3">
-                <label className="form-label">Timeline</label>
-                <input type="date" name="timeline" className="form-control" onChange={(e) => handleTaskChange(e)} value={taskData.timeline} min={new Date().toISOString().split('T')[0]} />
+                <label className="form-label isStar">Timeline</label>
+                {/* <input type="date" name="timeline" className={`form-control ${errors.timeline ? 'is-invalid' : ''}`} onChange={(e) => handleTaskChange(e)} value={taskData.timeline} min={new Date().toISOString().split('T')[0]} /> */}
+                <input type="date" name="timeline" className={`form-control ${errors.timeline ? 'is-invalid' : ''}`} onChange={(e) => handleTaskChange(e)} value={taskData.timeline} />
+                {errors.timeline && <div className="invalid-feedback">{errors.timeline}</div>}
               </div>
             </Col>
             <Col>
               <div>
-                <label className='form-label'>Status</label>
+                <label className='form-label isStar'>Status</label>
                 <Select
                   options={projectStatus}
                   value={selectedStatus}
                   isMulti={false}
+                  className={`${errors.status ? 'is-invalid' : ''}`}
                   onChange={(e) => handleStatusChange(e)}
                 />
+                {errors.status && <div className="invalid-feedback" style={{ display: 'block' }}>{errors.status}</div>}
               </div>
             </Col>
           </Row>
@@ -661,11 +828,11 @@ const Project = () => {
 
         </Modal.Body>
         <Modal.Footer>
-          <button type="button" class={"btn btn-danger success waves-light"} onClick={toggleTaskModal}>Cancel</button>
+          <button type="button" className={"btn btn-danger success waves-light"} onClick={toggleTaskModal}>Cancel</button>
           {/* <Button variant="secondary" onClick={() => setisOpenTaskModal(false)}>
             Cancel
           </Button> */}
-          <button type="button" class={"btn btn-success waves-light"} onClick={handleCreateTask}>{EditId ? "Update" : "Save"}</button>
+          <button type="button" className={"btn btn-success waves-light"} onClick={handleCreateTask}>{EditId ? "Update" : "Save"}</button>
           {/* <Button variant="primary" onClick={handleCreateTask}>
             {EditId ? "Update" : "Create"}
           </Button> */}
